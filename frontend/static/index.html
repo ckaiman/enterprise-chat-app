@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Enterprise Chat</title>
+    <script src="auth.js"></script>
+    <script src="chat.js"></script>
+</head>
+<script>
+    if (!localStorage.getItem("token")) {
+        window.location.href = "login.html";
+    }
+</script>
+<body>
+    <h1>Welcome to the Chat Assistant</h1>
+    <textarea id="chatbox"></textarea>
+    <button onclick="sendMessage()">Send</button>
+</body>
+</html>

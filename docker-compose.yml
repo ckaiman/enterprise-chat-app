@@ -1,0 +1,59 @@
+services:
+  auth_service:
+    build:
+      context: ./auth_service
+    ports:
+      - "8001:8001"
+    environment:
+      - SECRET_KEY=your_secret_here
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8001/token/validate"]
+      interval: 10s
+      retries: 3
+
+  mcp_gateway:
+    build:
+      context: ./mcp_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    environment:
+      - AUTH_URL=http://auth_service:8001/token/validate
+    volumes:
+      - ./common:/app/common  # ✅ Mounts shared auth module
+
+  leave_service:
+    build:
+      context: ./leave_service
+    ports:
+      - "8002:8002"
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    environment:
+      - AUTH_URL=http://auth_service:8001/token/validate
+    volumes:
+      - ./common:/app/common  # ✅ Mounts shared auth module
+
+  it_helpdesk_service:
+    build:
+      context: ./it_helpdesk_service
+    ports:
+      - "8003:8003"
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    environment:
+      - AUTH_URL=http://auth_service:8001/token/validate
+    volumes:
+      - ./common:/app/common  # ✅ Mounts shared auth module
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mcp_gateway
