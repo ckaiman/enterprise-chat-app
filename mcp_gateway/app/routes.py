@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from .auth_middleware import verify_token, get_raw_token
 from .leave_client import get_leave_balance, request_leave
 from .helpdesk_client import submit_ticket
+from .llm_client import get_intent_and_entities # Import the LLM client function
+import logging # Import the logging module
 
 router = APIRouter()
 
@@ -11,20 +13,33 @@ router = APIRouter()
 class ChatRequest(BaseModel):
     message: str
 
+# Get a logger instance
+logger = logging.getLogger(__name__)
+
 @router.post("/chat")
 # Modify the endpoint to expect the ChatRequest model
 async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str = Depends(get_raw_token)):
     """Processes chat message and routes to backend tools."""
-    email = user["sub"]
-    # Convert to lowercase and strip whitespace for more robust matching
-    message_content = request_data.message.lower().strip()
+    user_message = request_data.message
 
-    # More flexible check for leave balance
-    if "leave" in message_content and "balance" in message_content:
+    # Get intent and entities from the LLM client
+    llm_response = get_intent_and_entities(user_message)
+    intent = llm_response.get("intent")
+    entities = llm_response.get("entities", {})
+
+    # Log the intent and entities received from the LLM client
+    logger.info(f"MCP Gateway - Intent: {intent}, Entities: {entities}")
+
+    if intent == "get_leave_balance":
         return {"reply": get_leave_balance(token)}
-    elif "request leave" in message_content: # Changed to elif
-        return {"reply": request_leave(token, message_content)}
-    elif "help desk" in message_content or "IT issue" in message_content: # Changed to elif
-        return {"reply": submit_ticket(token, request_data.message)}
-    else: # Added else for clarity
+    elif intent == "request_leave":
+        # Pass original message or extracted entities.
+        # For this example, leave_client.request_leave might need to be updated
+        # to accept more detailed entities if the LLM provides them (e.g., dates).
+        return {"reply": request_leave(token, user_message)} # Or request_leave(token, **entities)
+    elif intent == "submit_it_ticket":
+        # Pass the original message or specific entities like description.
+        # helpdesk_client.submit_ticket might also be updated for more detailed entities.
+        return {"reply": submit_ticket(token, entities.get("description", user_message))} # Or submit_ticket(token, **entities)
+    else: # Default if intent is "unknown" or not handled
         return {"reply": "I didn't understand your request."}
