@@ -1,6 +1,6 @@
-mock_balances = {
-    "alice@example.com": {"vacation_days": 10, "sick_days": 5, "personal_days": 3},
-    "bob@example.com": {"vacation_days": 15, "sick_days": 8, "personal_days": 5}
+# Mock database for leave balances
+MOCK_LEAVE_BALANCES = {
+    "alice@example.com": {"annual": 15, "sick": 10},
+    "bob@example.com": {"annual": 20, "sick": 5},
+    # Add more users as needed
 }
-
-mock_requests = []

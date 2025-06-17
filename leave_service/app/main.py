@@ -1,34 +1,24 @@
-from fastapi import FastAPI, APIRouter, Depends, HTTPException
-from .models import LeaveRequest, LeaveBalance, LeaveHistory
-from .mock_db import mock_balances, mock_requests
+from fastapi import FastAPI, status
+from fastapi.middleware.cors import CORSMiddleware
 from .routes import router
-from .auth_middleware import verify_token
 
-app = FastAPI(title="Leave Request API")
-router = APIRouter()
+app = FastAPI(title="Leave Service")
 
-@router.get("/leave/balance", response_model=LeaveBalance)
-async def get_leave_balance(user=Depends(verify_token)):
-    """Return user's leave balances"""
-    email = user["sub"]
-    balance = mock_balances.get(email)
-    if not balance:
-        raise HTTPException(status_code=404, detail="No leave data found")
-    return {"email": email, **balance}
+@app.get("/health", status_code=status.HTTP_200_OK)
+async def health_check():
+    """Basic health check endpoint."""
+    return {"status": "healthy"}
 
-@router.get("/leave/history", response_model=LeaveHistory)
-async def get_leave_history(user=Depends(verify_token)):
-    """Return user's leave request history"""
-    email = user["sub"]
-    history = [req for req in mock_requests if req["email"] == email]
-    return {"email": email, "history": history}
+app.include_router(router)
 
-@router.post("/leave/request")
-async def request_leave(request: LeaveRequest, user=Depends(verify_token)):
-    """Submit a new leave request"""
-    email = user["sub"]
-    if email != request.email:
-        raise HTTPException(status_code=403, detail="Unauthorized request")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust as needed for security
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    mock_requests.append(request.dict())
-    return {"message": "Leave request submitted"}
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8002)
