@@ -13,7 +13,18 @@
 </script>
 <body>
     <h1>Welcome to the Chat Assistant</h1>
-    <textarea id="chatbox"></textarea>
-    <button onclick="sendMessage()">Send</button>
+    <div id="chat-container" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 10px;">
+        <!-- Chat messages will appear here -->
+    </div>
+    <div>
+        <textarea id="chatbox" style="width: 80%; vertical-align: middle;"></textarea>
+        <button onclick="sendMessage()" style="vertical-align: middle;">Send</button>
+    </div>
+    <style>
+        .bot-reply {
+            color: blue;
+            margin-bottom: 5px;
+        }
+    </style>
 </body>
 </html>
