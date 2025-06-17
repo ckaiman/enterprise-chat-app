@@ -2,13 +2,18 @@ from pydantic import BaseModel
 from typing import Optional
 
 class TicketRequest(BaseModel):
-    email: str
-    category: str  # "hardware", "software", "network", "other"
-    priority: str  # "low", "medium", "high"
+    category: str
+    priority: str
     description: str
 
 class TicketStatus(BaseModel):
+    status: str
+
+class TicketResponse(BaseModel):
     ticket_id: str
     email: str
-    status: str  # "open", "in progress", "resolved"
+    category: str
+    priority: str
+    description: str
+    status: str
     response: Optional[str] = None

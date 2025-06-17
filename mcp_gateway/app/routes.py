@@ -25,6 +25,6 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
     elif "request leave" in message_content: # Changed to elif
         return {"reply": request_leave(token, message_content)}
     elif "help desk" in message_content or "IT issue" in message_content: # Changed to elif
-        return {"reply": submit_ticket(email, request_data.message)} # Pass original message if needed by submit_ticket
+        return {"reply": submit_ticket(token, request_data.message)}
     else: # Added else for clarity
         return {"reply": "I didn't understand your request."}
