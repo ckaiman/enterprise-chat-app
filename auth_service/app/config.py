@@ -8,3 +8,6 @@ MOCK_USERS = {
     "alice@example.com": {"name": "Alice Johnson", "password": "hashedpassword123", "role": "employee"},
     "bob@example.com": {"name": "Bob Smith", "password": "hashedpassword456", "role": "it_admin"}
 }
+
+# CORS Origins
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:8080").split(",")

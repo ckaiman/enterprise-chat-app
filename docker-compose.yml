@@ -7,7 +7,7 @@ services:
     environment:
       - SECRET_KEY=your_secret_here
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8001/token/validate"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8001/health"]
       interval: 10s
       retries: 3
 
@@ -47,6 +47,10 @@ services:
         condition: service_healthy
     environment:
       - AUTH_URL=http://auth_service:8001/token/validate
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8003/health"]
+      interval: 10s
+      retries: 3
     volumes:
       - ./common:/app/common  # ✅ Mounts shared auth module
 

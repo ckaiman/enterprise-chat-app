@@ -1,9 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from .routes import router
 
 app = FastAPI(title="MCP Gateway")
+
+@app.get("/health", status_code=status.HTTP_200_OK)
+async def health_check():
+    """Basic health check endpoint."""
+    return {"status": "healthy"}
 
 app.add_middleware(
     CORSMiddleware,
