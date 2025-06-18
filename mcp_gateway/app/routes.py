@@ -5,6 +5,7 @@ from .auth_middleware import verify_token, get_raw_token
 from .leave_client import get_leave_balance, request_leave
 from .helpdesk_client import submit_ticket
 from .llm_client import get_intent_and_entities # Import the LLM client function
+from .account_client import get_account_details # Import the new account client function
 import logging # Import the logging module
 
 router = APIRouter()
@@ -44,5 +45,7 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
             category=entities.get("category", "other"), # Default if not extracted
             priority=entities.get("priority", "medium")  # Default if not extracted
         )}
+    elif intent == "get_account_info":
+        return {"reply": get_account_details(token)}
     else: # Default if intent is "unknown" or not handled
         return {"reply": "I didn't understand your request."}

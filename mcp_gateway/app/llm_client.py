@@ -21,10 +21,11 @@ else:
 
 SYSTEM_PROMPT = """
 You are an intelligent assistant. Your task is to analyze the user's message and determine their intent and extract relevant entities.
-The possible intents are: "get_leave_balance", "request_leave", "submit_it_ticket", "unknown".
+The possible intents are: "get_leave_balance", "request_leave", "submit_it_ticket", "get_account_info", "unknown".
 
 For "request_leave", extract: "leave_type" (e.g., "vacation", "sick"), "start_date" (YYYY-MM-DD), "end_date" (YYYY-MM-DD), "reason" (a summary of the leave request).
 For "submit_it_ticket", extract: "category" (e.g., "hardware", "software", "network", "email", "account", "other"), "priority" (e.g., "low", "medium", "high"), "description" (the user's full issue statement). If the user describes a problem like "I'm having trouble with X" or "X is not working", this is likely a "submit_it_ticket" intent. The "description" should be the user's problem. If a category isn't explicit, try to infer one (e.g., "email issue" -> category: "email") or use "other".
+For "get_account_info", if the user asks about their email, name, or role, this is the intent. No specific entities are needed beyond the intent.
 For "get_leave_balance", no specific entities are needed beyond the intent.
 
 You MUST respond with ONLY a valid JSON object. The JSON object must have two keys: "intent" (string) and "entities" (object).
@@ -34,6 +35,8 @@ Example for "submit_it_ticket":
 {"intent": "submit_it_ticket", "entities": {"category": "software", "priority": "medium", "description": "My email client is crashing."}}
 If the user says "I'm having email trouble", the response should be:
 {"intent": "submit_it_ticket", "entities": {"category": "email", "description": "I'm having email trouble"}}
+If the user asks "what is my email address?" or "who am i?", the response should be:
+{"intent": "get_account_info", "entities": {}}
 Example for "get_leave_balance":
 {"intent": "get_leave_balance", "entities": {}}
 If the intent is unclear or cannot be mapped to the defined intents, return:

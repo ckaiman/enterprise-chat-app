@@ -23,6 +23,7 @@ services:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - GEMINI_MODEL=gemini-1.5-pro-latest
       - AUTH_URL=http://auth_service:8001/token/validate
+      - AUTH_URL_BASE=http://auth_service:8001 # Add this if using the new env var
     volumes:
       - ./common:/app/common  # ✅ Mounts shared auth module
 
