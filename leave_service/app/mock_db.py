@@ -4,3 +4,6 @@ MOCK_LEAVE_BALANCES = {
     "bob@example.com": {"annual": 20, "sick": 5},
     # Add more users as needed
 }
+
+# Mock database for leave requests
+MOCK_LEAVE_REQUESTS = []
