@@ -5,7 +5,7 @@ services:
     ports:
       - "8001:8001"
     environment:
-      - SECRET_KEY=your_secret_here
+      - SECRET_KEY=supersecret
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:8001/health"]
       interval: 10s
@@ -20,6 +20,8 @@ services:
       auth_service:
         condition: service_healthy
     environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - GEMINI_MODEL=gemini-1.5-pro-latest
       - AUTH_URL=http://auth_service:8001/token/validate
     volumes:
       - ./common:/app/common  # ✅ Mounts shared auth module
@@ -33,7 +35,9 @@ services:
       auth_service:
         condition: service_healthy
     environment:
-      - AUTH_URL=http://auth_service:8001/token/validate
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY} # Pass your Google API key
+      - GEMINI_MODEL=gemini-1.5-pro-latest    # Updated to a more advanced Pro model
+      - AUTH_URL=http://auth_service:8001/token/validate # Keep this
     volumes:
       - ./common:/app/common  # ✅ Mounts shared auth module
 
