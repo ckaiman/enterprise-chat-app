@@ -38,8 +38,11 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
         # to accept more detailed entities if the LLM provides them (e.g., dates).
         return {"reply": request_leave(token, user_message)} # Or request_leave(token, **entities)
     elif intent == "submit_it_ticket":
-        # Pass the original message or specific entities like description.
-        # helpdesk_client.submit_ticket might also be updated for more detailed entities.
-        return {"reply": submit_ticket(token, entities.get("description", user_message))} # Or submit_ticket(token, **entities)
+        return {"reply": submit_ticket(
+            token=token,
+            description=entities.get("description", user_message),
+            category=entities.get("category", "other"), # Default if not extracted
+            priority=entities.get("priority", "medium")  # Default if not extracted
+        )}
     else: # Default if intent is "unknown" or not handled
         return {"reply": "I didn't understand your request."}
