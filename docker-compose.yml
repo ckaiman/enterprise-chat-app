@@ -24,6 +24,7 @@ services:
       - GEMINI_MODEL=gemini-1.5-pro-latest
       - AUTH_URL=http://auth_service:8001/token/validate
       - AUTH_URL_BASE=http://auth_service:8001 # Add this if using the new env var
+      - OFFICE_SECURITY_API_URL=http://office_security_service:8004
     volumes:
       - ./common:/app/common  # ✅ Mounts shared auth module
 
@@ -58,6 +59,23 @@ services:
       retries: 3
     volumes:
       - ./common:/app/common  # ✅ Mounts shared auth module
+
+  office_security_service:
+    build:
+      context: ./office_security_service
+    ports:
+      - "8004:8004"
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    environment:
+      - AUTH_URL=http://auth_service:8001/token/validate
+      - EXTERNAL_SECURITY_API_BASE_URL=https://api-osepc-stage.apps.vep1.senate.gov/api/v1/
+      # - EXTERNAL_SECURITY_API_KEY=${EXTERNAL_SECURITY_API_KEY} # If needed, set in .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8004/health"]
+      interval: 10s
+      retries: 3
 
   frontend:
     build:

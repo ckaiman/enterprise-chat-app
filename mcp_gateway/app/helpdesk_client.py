@@ -15,3 +15,15 @@ def submit_ticket(token: str, description: str, category: str = "other", priorit
     }
     response = requests.post(f"{HELPDESK_API_URL}/tickets", headers=headers, json=payload)
     return response.json()
+
+def get_all_tickets(token: str):
+    """Fetch all IT tickets (requires admin privileges)"""
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(f"{HELPDESK_API_URL}/tickets/all", headers=headers)
+    return response.json()
+
+def get_all_tickets(token: str):
+    """Fetch all IT tickets (requires admin privileges)"""
+    headers = {"Authorization": f"Bearer {token}"}
+    response = requests.get(f"{HELPDESK_API_URL}/tickets/all", headers=headers)
+    return response.json()

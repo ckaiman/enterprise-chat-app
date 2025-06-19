@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from .auth_middleware import verify_token, get_raw_token
 from .leave_client import get_leave_balance, request_leave
-from .helpdesk_client import submit_ticket
+from .helpdesk_client import submit_ticket, get_all_tickets
 from .llm_client import get_intent_and_entities # Import the LLM client function
 from .account_client import get_account_details # Import the new account client function
+from .office_security_client import report_security_incident, submit_travel_security_request
 import logging # Import the logging module
 
 router = APIRouter()
@@ -49,5 +50,28 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
     elif intent == "get_account_info":
         account_detail_query = entities.get("account_detail_query")
         return {"reply": get_account_details(token, account_detail_query=account_detail_query)}
+    elif intent == "get_all_it_tickets":
+        # Check user role before calling the client
+        if user.get("role") == "it_admin":
+            return {"reply": get_all_tickets(token)}
+        else:
+            return {"reply": "Sorry, you do not have permission to view all IT tickets."}
+    elif intent == "report_office_security_incident":
+        return {"reply": report_security_incident(
+            token=token,
+            incident_type=entities.get("incident_type", "other"), # Default if not extracted
+            description=entities.get("description", user_message), # Fallback to full message
+            location=entities.get("location", "Not specified") # Default if not extracted
+        )}
+    elif intent == "submit_travel_security_request":
+        return {"reply": submit_travel_security_request(
+            token=token,
+            details=entities.get("details", user_message), # Fallback to full message
+            senator_name=entities.get("senator_name"),
+            request_type=entities.get("request_type"),
+            travel_type=entities.get("travel_type"),
+            travel_type_other=entities.get("travel_type_other"),
+            travel_date=entities.get("travel_date")
+        )}
     else: # Default if intent is "unknown" or not handled
         return {"reply": "I didn't understand your request."}
