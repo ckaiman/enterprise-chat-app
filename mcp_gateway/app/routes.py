@@ -32,7 +32,8 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
     logger.info(f"MCP Gateway - Intent: {intent}, Entities: {entities}")
 
     if intent == "get_leave_balance":
-        return {"reply": get_leave_balance(token)}
+        leave_type_query = entities.get("leave_type_query")
+        return {"reply": get_leave_balance(token, leave_type_query=leave_type_query)}
     elif intent == "request_leave":
         # Pass original message or extracted entities.
         # For this example, leave_client.request_leave might need to be updated
@@ -46,6 +47,7 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
             priority=entities.get("priority", "medium")  # Default if not extracted
         )}
     elif intent == "get_account_info":
-        return {"reply": get_account_details(token)}
+        account_detail_query = entities.get("account_detail_query")
+        return {"reply": get_account_details(token, account_detail_query=account_detail_query)}
     else: # Default if intent is "unknown" or not handled
         return {"reply": "I didn't understand your request."}

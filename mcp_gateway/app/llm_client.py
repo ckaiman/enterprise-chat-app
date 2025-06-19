@@ -25,8 +25,8 @@ The possible intents are: "get_leave_balance", "request_leave", "submit_it_ticke
 
 For "request_leave", extract: "leave_type" (e.g., "vacation", "sick"), "start_date" (YYYY-MM-DD), "end_date" (YYYY-MM-DD), "reason" (a summary of the leave request).
 For "submit_it_ticket", extract: "category" (e.g., "hardware", "software", "network", "email", "account", "other"), "priority" (e.g., "low", "medium", "high"), "description" (the user's full issue statement). If the user describes a problem like "I'm having trouble with X" or "X is not working", this is likely a "submit_it_ticket" intent. The "description" should be the user's problem. If a category isn't explicit, try to infer one (e.g., "email issue" -> category: "email") or use "other".
-For "get_account_info", if the user asks about their email, name, or role, this is the intent. No specific entities are needed beyond the intent.
-For "get_leave_balance", no specific entities are needed beyond the intent.
+For "get_account_info", extract "account_detail_query" which can be "email", "name", "role". If no specific detail is requested (e.g., "tell me about my account", "who am i?"), the "entities" object can be empty, implying all details are requested.
+For "get_leave_balance", extract "leave_type_query" which can be "sick", "annual", "vacation". If no specific type is requested (e.g., "what's my leave balance?"), the "entities" object can be empty, implying all types are requested.
 
 You MUST respond with ONLY a valid JSON object. The JSON object must have two keys: "intent" (string) and "entities" (object).
 Example for "request_leave":
@@ -35,9 +35,15 @@ Example for "submit_it_ticket":
 {"intent": "submit_it_ticket", "entities": {"category": "software", "priority": "medium", "description": "My email client is crashing."}}
 If the user says "I'm having email trouble", the response should be:
 {"intent": "submit_it_ticket", "entities": {"category": "email", "description": "I'm having email trouble"}}
-If the user asks "what is my email address?" or "who am i?", the response should be:
+If the user asks "what is my email address?", the response should be:
+{"intent": "get_account_info", "entities": {"account_detail_query": "email"}}
+If the user asks "what is my role?", the response should be:
+{"intent": "get_account_info", "entities": {"account_detail_query": "role"}}
+If the user asks "who am i?" or "tell me about my account", the response should be:
 {"intent": "get_account_info", "entities": {}}
-Example for "get_leave_balance":
+If a user asks "how much sick leave do I have?", the response should be:
+{"intent": "get_leave_balance", "entities": {"leave_type_query": "sick"}}
+If a user asks "what is my leave balance?", the response should be:
 {"intent": "get_leave_balance", "entities": {}}
 If the intent is unclear or cannot be mapped to the defined intents, return:
 {"intent": "unknown", "entities": {}}
