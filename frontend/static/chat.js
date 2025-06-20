@@ -5,8 +5,7 @@ function appendMessageToChat(message, sender) {
     if (sender === "bot") {
         messageElement.classList.add("bot-reply"); // For blue text styling
     }
-    chatContainer.appendChild(messageElement);
-    chatContainer.scrollTop = chatContainer.scrollHeight; // Scroll to the bottom
+    chatContainer.prepend(messageElement); // Add new messages to the top
 }
 
 function updateLoginLogoutButton() {
@@ -88,3 +87,17 @@ function sendMessage() {
     })
     .catch(error => console.error("Chat failed", error));
 }
+
+// Add event listener for Enter key to send message
+document.addEventListener('DOMContentLoaded', () => {
+    const chatbox = document.getElementById('chatbox');
+    if (chatbox) {
+        chatbox.addEventListener('keydown', function(event) {
+            // Send message on Enter key press, but allow new lines with Shift+Enter
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault(); // Prevents adding a new line
+                sendMessage();
+            }
+        });
+    }
+});

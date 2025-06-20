@@ -18,12 +18,12 @@
         <button id="login-logout-button"></button>
     </div>
     <h1 id="welcome-header">Welcome to the Chat Assistant</h1>
-    <div id="chat-container" style="border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; margin-bottom: 10px;">
-        <!-- Chat messages will appear here -->
-    </div>
     <div>
         <textarea id="chatbox" style="width: 80%; vertical-align: middle;" placeholder="Enter your request or question..."></textarea>
         <button onclick="sendMessage()" style="vertical-align: middle;">Send</button>
+    </div>
+    <div id="chat-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
+        <!-- Chat messages will appear here -->
     </div>
     <style>
         .bot-reply {
