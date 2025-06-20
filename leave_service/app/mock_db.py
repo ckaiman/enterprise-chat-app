@@ -2,6 +2,7 @@
 MOCK_LEAVE_BALANCES = {
     "alice@example.com": {"annual": 15, "sick": 10},
     "bob@example.com": {"annual": 20, "sick": 5},
+    "security_admin@example.com": {"annual": 25, "sick": 10} 
     # Add more users as needed
 }
 

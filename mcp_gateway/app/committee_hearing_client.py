@@ -31,10 +31,38 @@ def submit_committee_hearing_security_request(
     response = requests.post(endpoint, headers=headers, json=payload)
     return response.json()
 
-def get_all_hearing_security_requests(token: str):
+def get_all_hearing_security_requests(
+    token: str,
+    committee_name_filter: Optional[str] = None,
+    location_filter: Optional[str] = None,
+    level_filter: Optional[str] = None,
+    start_date_filter: Optional[str] = None,
+    end_date_filter: Optional[str] = None
+):
     """Fetch all committee hearing security requests (requires security_admin privileges)"""
     headers = {"Authorization": f"Bearer {token}"}
     endpoint = f"{COMMITTEE_HEARING_API_URL}/hearings/security/all" # Matches the path in committee_hearing_security_service
-    logger.info(f"Fetching all committee hearing security requests from {endpoint}")
+    
+    params = {}
+    if committee_name_filter:
+        params["committeeNameFilter"] = committee_name_filter
+    if location_filter:
+        params["locationFilter"] = location_filter
+    if level_filter:
+        params["levelFilter"] = level_filter
+    if start_date_filter:
+        params["startDateFilter"] = start_date_filter
+    if end_date_filter:
+        params["endDateFilter"] = end_date_filter
+
+    logger.info(f"Fetching committee hearing security requests from {endpoint} with params: {params}")
+    response = requests.get(endpoint, headers=headers, params=params)
+    return response.json()
+
+def get_most_recent_hearing_security_request(token: str):
+    """Fetch the most recent committee hearing security request (requires security_admin privileges)"""
+    headers = {"Authorization": f"Bearer {token}"}
+    endpoint = f"{COMMITTEE_HEARING_API_URL}/hearings/security/most-recent"
+    logger.info(f"Fetching the most recent committee hearing security request from {endpoint}")
     response = requests.get(endpoint, headers=headers)
     return response.json()
