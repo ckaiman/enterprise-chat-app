@@ -6,10 +6,6 @@ services:
       - "8001:8001"
     environment:
       - SECRET_KEY=supersecret
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8001/health"]
-      interval: 10s
-      retries: 3
 
   mcp_gateway:
     build:
@@ -18,9 +14,9 @@ services:
       - "8000:8000"
     depends_on:
       auth_service:
-        condition: service_healthy
-      office_security_service: # Add dependency
-        condition: service_healthy # Wait for it to be healthy
+        condition: service_started
+      office_security_service:
+        condition: service_started
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - GEMINI_MODEL=gemini-1.5-pro-latest
@@ -38,7 +34,7 @@ services:
       - "8002:8002"
     depends_on:
       auth_service:
-        condition: service_healthy
+        condition: service_started
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY} # Pass your Google API key
       - GEMINI_MODEL=gemini-1.5-pro-latest    # Updated to a more advanced Pro model
@@ -53,13 +49,9 @@ services:
       - "8003:8003"
     depends_on:
       auth_service:
-        condition: service_healthy
+        condition: service_started
     environment:
       - AUTH_URL=http://auth_service:8001/token/validate
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8003/health"]
-      interval: 10s
-      retries: 3
     volumes:
       - ./common:/app/common  # ✅ Mounts shared auth module
 
@@ -70,15 +62,10 @@ services:
       - "8004:8004"
     depends_on:
       auth_service:
-        condition: service_healthy
+        condition: service_started
     environment:
       - AUTH_URL=http://auth_service:8001/token/validate
       - EXTERNAL_SECURITY_API_BASE_URL=https://api-osepc-stage.apps.vep1.senate.gov/api/v1/
-      # - EXTERNAL_SECURITY_API_KEY=${EXTERNAL_SECURITY_API_KEY} # If needed, set in .env
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8004/health"]
-      interval: 10s
-      retries: 3
 
 
   committee_hearing_security_service:
@@ -88,15 +75,9 @@ services:
       - "8005:8005"
     depends_on:
       auth_service:
-        condition: service_healthy
+        condition: service_started
     environment:
       - AUTH_URL=http://auth_service:8001/token/validate
-      # - EXTERNAL_API_BASE_URL=... # Add if this service calls an external API
-      # - EXTERNAL_API_KEY=...      # Add if needed
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8005/health"]
-      interval: 10s
-      retries: 3
 
   frontend:
     build:
