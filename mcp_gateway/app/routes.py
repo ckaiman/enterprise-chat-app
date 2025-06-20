@@ -80,19 +80,22 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
     elif intent == "get_all_committee_hearing_security_requests":
         # Check user role before calling the client
         if user.get("role") == "security_admin":
+            format_as_table = any(keyword in user_message.lower() for keyword in ["table", "list"])
             return {"reply": get_all_hearing_security_requests(
                 token=token,
                 committee_name_filter=entities.get("committee_name_filter"),
                 location_filter=entities.get("location_filter"),
                 level_filter=entities.get("level_filter"),
                 start_date_filter=entities.get("start_date_filter"),
-                end_date_filter=entities.get("end_date_filter")
+                end_date_filter=entities.get("end_date_filter"),
+                format_as_table=format_as_table
             )}
         else:
             return {"reply": "Sorry, you do not have permission to view all committee hearing security requests."}
     elif intent == "get_most_recent_committee_hearing_security_request":
         if user.get("role") == "security_admin":
-            return {"reply": get_most_recent_hearing_security_request(token)}
+            format_as_table = any(keyword in user_message.lower() for keyword in ["table", "list"])
+            return {"reply": get_most_recent_hearing_security_request(token, format_as_table=format_as_table)}
         else:
             return {"reply": "Sorry, you do not have permission to view the most recent committee hearing security request."}
     else: # Default if intent is "unknown" or not handled
