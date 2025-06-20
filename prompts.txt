@@ -6,3 +6,13 @@ i am also having trouble with my iphone
 
 i need a vacation, how much time do I have available?
 { "annual": 20 }
+
+can i request hearing security for the BUDGET committee on June 22nd?
+{ "committee_hearing_data": { "name": "Unnamed Hearing", "location": "Unknown Location", "committee_name": "BUDGET" }, "description": "hearing security", "datetime_incident": null, "is_normal": true, "level": null, "photo": null, "id": 2322, "created_by": "bob@example.com", "committee_hearing_uuid": "6d2b4f43-3135-4424-bd50-278f66122c81", "datetime_created": "2025-06-20T14:17:12.252586Z", "datetime_updated": "2025-06-20T14:17:12.252595Z" }
+
+IF A MEMBER OF security_admin:
+    can i get a list of hearing secrity requests?
+    [ { "committee_hearing_data": { "name": "Closed hearing on Intelligence Matters", "location": "SH-219", "committee_name": "INTELLIGENCE" }, "description": "Staff and Members gathered throughout hearing rooms. Media is present but orderly. USCP is monitoring/posted as requested. Checked in with staff - Appreciative of support. No issues or disruptions expected.", "datetime_incident": "2025-06-18T14:05:00-04:00", "is_normal": true, "level": "Green", "photo": "", "id": 2320, "created_by": "bob@example.com", "committee_hearing_uuid": "f836e673-7e2f-421b-a017-4ddc4166fc4e", "datetime_created": "2025-06-18T14:05:38.147375-04:00", "datetime_updated": "2025-06-18T14:05:38.147392-04:00" }, { "committee_hearing_data": { "name": "Open hearing on Budget Priorities", "location": "SD-608", "committee_name": "BUDGET" }, "description": "Standard security presence. No issues.", "datetime_incident": "2025-06-19T10:00:00-04:00", "is_normal": true, "level": "Green", "photo": "", "id": 2321, "created_by": "alice@example.com", "committee_hearing_uuid": "780e30d8-7075-47b1-a086-1b7bfd1a9918", "datetime_created": "2025-06-19T10:01:10.500000-04:00", "datetime_updated": "2025-06-19T10:01:10.500000-04:00" } ]
+IF NOT:
+    can i get a list of hearing secrity requests?
+    Sorry, you do not have permission to view all committee hearing security requests.

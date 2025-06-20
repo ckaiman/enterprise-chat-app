@@ -19,12 +19,15 @@ services:
     depends_on:
       auth_service:
         condition: service_healthy
+      office_security_service: # Add dependency
+        condition: service_healthy # Wait for it to be healthy
     environment:
       - GOOGLE_API_KEY=${GOOGLE_API_KEY}
       - GEMINI_MODEL=gemini-1.5-pro-latest
       - AUTH_URL=http://auth_service:8001/token/validate
       - AUTH_URL_BASE=http://auth_service:8001 # Add this if using the new env var
       - OFFICE_SECURITY_API_URL=http://office_security_service:8004
+      - COMMITTEE_HEARING_API_URL=http://committee_hearing_security_service:8005
     volumes:
       - ./common:/app/common  # ✅ Mounts shared auth module
 
@@ -74,6 +77,24 @@ services:
       # - EXTERNAL_SECURITY_API_KEY=${EXTERNAL_SECURITY_API_KEY} # If needed, set in .env
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:8004/health"]
+      interval: 10s
+      retries: 3
+
+
+  committee_hearing_security_service:
+    build:
+      context: ./committee_hearing_security_service
+    ports:
+      - "8005:8005"
+    depends_on:
+      auth_service:
+        condition: service_healthy
+    environment:
+      - AUTH_URL=http://auth_service:8001/token/validate
+      # - EXTERNAL_API_BASE_URL=... # Add if this service calls an external API
+      # - EXTERNAL_API_KEY=...      # Add if needed
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8005/health"]
       interval: 10s
       retries: 3
 

@@ -7,6 +7,7 @@ from .helpdesk_client import submit_ticket, get_all_tickets
 from .llm_client import get_intent_and_entities # Import the LLM client function
 from .account_client import get_account_details # Import the new account client function
 from .office_security_client import submit_travel_security_request
+from .committee_hearing_client import submit_committee_hearing_security_request, get_all_hearing_security_requests
 import logging # Import the logging module
 
 router = APIRouter()
@@ -66,5 +67,21 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
             travel_type_other=entities.get("travel_type_other"),
             travel_date=entities.get("travel_date")
         )}
+    elif intent == "submit_committee_hearing_security_request":
+        return {"reply": submit_committee_hearing_security_request(
+            token=token,
+            committee_name=entities.get("committee_name", "Unknown Committee"),
+            hearing_name=entities.get("hearing_name", "Unnamed Hearing"),
+            location=entities.get("location", "Unknown Location"),
+            description=entities.get("description", user_message), # Fallback to full message
+            hearing_date=entities.get("hearing_date"),
+            hearing_time=entities.get("hearing_time")
+        )}
+    elif intent == "get_all_committee_hearing_security_requests":
+        # Check user role before calling the client
+        if user.get("role") == "security_admin":
+            return {"reply": get_all_hearing_security_requests(token)}
+        else:
+            return {"reply": "Sorry, you do not have permission to view all committee hearing security requests."}
     else: # Default if intent is "unknown" or not handled
         return {"reply": "I didn't understand your request."}
