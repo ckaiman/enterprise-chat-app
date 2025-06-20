@@ -6,22 +6,6 @@ logger = logging.getLogger(__name__)
 
 OFFICE_SECURITY_API_URL = os.getenv("OFFICE_SECURITY_API_URL", "http://office_security_service:8004")
 
-def report_security_incident(token: str, incident_type: str, description: str, location: str = "Not specified"):
-    """
-    Reports a security incident to the office_security_service.
-    """
-    headers = {"Authorization": f"Bearer {token}"}
-    payload = {
-        "incident_type": incident_type,
-        "location": location,
-        "description": description
-    }
-    # The office_security_service has a /security prefix for its routes
-    endpoint = f"{OFFICE_SECURITY_API_URL}/security/incidents" 
-    logger.info(f"Reporting security incident to {endpoint} with payload: {payload}")
-    response = requests.post(endpoint, headers=headers, json=payload)
-    return response.json()
-
 def submit_travel_security_request(token: str, details: str, senator_name: str = None, request_type: str = None, travel_type: str = None, travel_type_other: str = None, travel_date: str = None):
     """
     Submits a travel security request to the office_security_service.

@@ -1,16 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
 
-class SecurityIncidentReport(BaseModel):
-    incident_type: str
-    location: str
-    description: str
-    reported_by_email: Optional[str] = None # Will be filled from token
-
-class SecurityIncidentResponse(SecurityIncidentReport):
-    incident_id: str
-    status: str
-
 class TravelSecurityRequestData(BaseModel):
     senator_name: Optional[str] = None
     request_type: Optional[str] = None # e.g., "Briefing", "Assessment", "Support"

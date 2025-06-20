@@ -6,7 +6,7 @@ from .leave_client import get_leave_balance, request_leave
 from .helpdesk_client import submit_ticket, get_all_tickets
 from .llm_client import get_intent_and_entities # Import the LLM client function
 from .account_client import get_account_details # Import the new account client function
-from .office_security_client import report_security_incident, submit_travel_security_request
+from .office_security_client import submit_travel_security_request
 import logging # Import the logging module
 
 router = APIRouter()
@@ -56,13 +56,6 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
             return {"reply": get_all_tickets(token)}
         else:
             return {"reply": "Sorry, you do not have permission to view all IT tickets."}
-    elif intent == "report_office_security_incident":
-        return {"reply": report_security_incident(
-            token=token,
-            incident_type=entities.get("incident_type", "other"), # Default if not extracted
-            description=entities.get("description", user_message), # Fallback to full message
-            location=entities.get("location", "Not specified") # Default if not extracted
-        )}
     elif intent == "submit_travel_security_request":
         return {"reply": submit_travel_security_request(
             token=token,

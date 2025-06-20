@@ -1,0 +1,8 @@
+You: can i request travel security for senator Thune, on June 22nd?
+Bot: { "senator_name": "Senator Thune", "request_type": "Support", "travel_type": null, "travel_type_other": null, "travel_date": "2024-06-22", "details": "travel security for June 22nd", "request_id": "19e17762-c412-4eb0-ad1b-dc0c946a792f", "status": "received" }
+
+You: i am also having trouble with my iphone
+Bot: { "ticket_id": "40b5d207-711e-4e47-84e4-ba6a7d1fd33d", "email": "bob@example.com", "category": "other", "priority": "medium", "description": "i am also having trouble with my iphone", "status": "open", "response": null }
+
+You: i need a vacation, how much time do I have available?
+Bot: { "annual": 20 }
