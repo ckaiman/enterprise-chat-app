@@ -17,54 +17,6 @@ function appendMessageToChat(message, sender) {
     chatContainer.prepend(messageElement); // Add new messages to the top
 }
 
-function updateLoginLogoutButton() {
-    const button = document.getElementById("login-logout-button");
-    if (!button) return; // Safety check if button doesn't exist
-
-    const token = localStorage.getItem("token");
-
-    if (token) {
-        button.textContent = "Logout";
-        button.onclick = function() {
-            localStorage.removeItem("token");
-            window.location.href = "login.html";
-        };
-    } else {
-        // This state should ideally not be reached on index.html due to the redirect logic,
-        // but it's good practice for the function to handle it.
-        button.textContent = "Login";
-        button.onclick = function() {
-            window.location.href = "login.html";
-        };
-    }
-}
-
-async function loadUserDetailsAndWelcome() {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    try {
-        const response = await fetch("http://localhost:8001/account/me", { // Directly call auth_service
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token
-            }
-        });
-        if (response.ok) {
-            const userData = await response.json();
-            const fullName = userData.name || "User";
-            const firstName = fullName.split(" ")[0]; // Get the first name
-            document.getElementById("welcome-header").textContent = `Welcome, ${firstName}, to the Chat Assistant`;
-        } else {
-            console.error("Failed to fetch user details:", response.status);
-        }
-    } catch (error) {
-        console.error("Error fetching user details:", error);
-    }
-    // Always update the button state after attempting to load user details
-    updateLoginLogoutButton();
-}
-
 function sendMessage() {
     let message = document.getElementById("chatbox").value;
     let token = localStorage.getItem("token");
@@ -105,6 +57,16 @@ function sendMessage() {
 
 // Add event listener for Enter key to send message
 document.addEventListener('DOMContentLoaded', () => {
+    // Check for authentication token. If not present, redirect to the login page.
+    if (!localStorage.getItem("token")) {
+        window.location.href = "login.html";
+        return; // Stop further script execution
+    } else {
+        // If authenticated, load user details and set up the logout button.
+        // This function is defined in auth.js
+        loadUserDetailsAndWelcome();
+    }
+
     const chatbox = document.getElementById('chatbox');
     if (chatbox) {
         chatbox.addEventListener('keydown', function(event) {
