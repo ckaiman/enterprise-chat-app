@@ -2,7 +2,7 @@ function login() {
     let email = document.getElementById("email").value;
     let password = document.getElementById("password").value;
 
-    fetch("http://localhost:8001/auth/login", {
+    fetch("/auth/login", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({email, password})
@@ -42,7 +42,7 @@ async function loadUserDetailsAndWelcome() {
     if (!token) return;
 
     try {
-        const response = await fetch("http://localhost:8001/account/me", { // Directly call auth_service
+        const response = await fetch("/account/me", {
             method: "GET",
             headers: {
                 "Authorization": "Bearer " + token

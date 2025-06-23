@@ -11,14 +11,65 @@
         <button id="login-logout-button"></button>
     </div>
     <h1 id="welcome-header">Welcome to the Chat Assistant</h1>
-    <div>
-        <textarea id="chatbox" style="width: 80%; vertical-align: middle;" placeholder="Enter your request or question..."></textarea>
-        <button onclick="sendMessage()" style="vertical-align: middle;">Send</button>
+    <div class="chat-input-container">
+        <!-- Speech Recognition Toggle -->
+        <label class="switch">
+            <input type="checkbox" id="mic-toggle">
+            <span class="slider"></span>
+        </label>
+        <textarea id="chatbox" placeholder="Enter your request or question..."></textarea>
+        <button onclick="sendMessage()">Send</button>
     </div>
     <div id="chat-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
         <!-- Chat messages will appear here -->
     </div>
     <style>
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        #chatbox {
+            flex-grow: 1; /* Take up remaining space */
+            resize: vertical;
+            min-height: 40px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        /* The switch - a checkbox with a custom style */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { display: none; } /* Hide default checkbox */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "🎤";
+            height: 20px; width: 20px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        input:checked + .slider { background-color: #2196F3; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
         .bot-reply {
             color: blue;
             margin-bottom: 5px;
