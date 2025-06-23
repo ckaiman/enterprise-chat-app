@@ -42,7 +42,8 @@ async def get_all_hearing_security_requests(
     location: Optional[str] = Query(None, alias="locationFilter"),
     level: Optional[str] = Query(None, alias="levelFilter"),
     start_date_filter: Optional[str] = Query(None, alias="startDateFilter", description="YYYY-MM-DD"),
-    end_date_filter: Optional[str] = Query(None, alias="endDateFilter", description="YYYY-MM-DD")
+    end_date_filter: Optional[str] = Query(None, alias="endDateFilter", description="YYYY-MM-DD"),
+    limit: Optional[int] = Query(None, description="Limit the number of results returned")
 ):
     """Return all committee hearing security requests (security_admin only)"""
     logger.info(f"Security admin {user_auth_data.get('sub')} requested hearing security requests with filters: committee_name={committee_name}, location={location}, level={level}, start_date={start_date_filter}, end_date={end_date_filter}.")
@@ -80,7 +81,18 @@ async def get_all_hearing_security_requests(
             filtered_requests = [req for req in filtered_requests if req.get("datetime_incident") and req["datetime_incident"].date() <= e_date_naive]
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid end_date_filter format. Use YYYY-MM-DD.")
-            
+
+    # Sort by incident date descending to get the most recent ones first.
+    # This handles the "last X" type of requests.
+    # We provide a default for None dates to prevent sorting errors.
+    filtered_requests.sort(
+        key=lambda x: x.get("datetime_incident") or datetime.min.replace(tzinfo=timezone.utc),
+        reverse=True
+    )
+
+    if limit:
+        filtered_requests = filtered_requests[:limit]
+
     return filtered_requests
 
 @router.get("/security/most-recent", response_model=Optional[CommitteeHearingSecurityResponse])

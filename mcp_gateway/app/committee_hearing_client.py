@@ -74,6 +74,7 @@ def get_all_hearing_security_requests(
     level_filter: Optional[str] = None,
     start_date_filter: Optional[str] = None,
     end_date_filter: Optional[str] = None,
+    limit: Optional[int] = None,
     format_as_table: bool = False
 ):
     """Fetch all committee hearing security requests (requires security_admin privileges)"""
@@ -91,6 +92,8 @@ def get_all_hearing_security_requests(
         params["startDateFilter"] = start_date_filter
     if end_date_filter:
         params["endDateFilter"] = end_date_filter
+    if limit:
+        params["limit"] = limit
 
     logger.info(f"Fetching committee hearing security requests from {endpoint} with params: {params}")
     try:

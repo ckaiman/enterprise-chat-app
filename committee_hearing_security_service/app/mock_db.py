@@ -21,7 +21,7 @@ mock_hearing_security_requests = [
         "datetime_created": tz_datetime(2025, 6, 18, 14, 5, 38, 147375),
         "datetime_updated": tz_datetime(2025, 6, 18, 14, 5, 38, 147392),
         "is_normal": True,
-        "level": "Green",
+        "level": "Red",
         "photo": ""
     },
     {
@@ -38,7 +38,7 @@ mock_hearing_security_requests = [
         "datetime_created": tz_datetime(2025, 6, 19, 10, 1, 10, 500000),
         "datetime_updated": tz_datetime(2025, 6, 19, 10, 1, 10, 500000),
         "is_normal": True,
-        "level": "Green",
+        "level": "Yellow",
         "photo": ""
     },
     {
@@ -89,7 +89,7 @@ mock_hearing_security_requests = [
         "datetime_created": tz_datetime(2025, 5, 19, 10, 1, 10, 500000),
         "datetime_updated": tz_datetime(2025, 5, 19, 10, 1, 10, 500000),
         "is_normal": True,
-        "level": "Green",
+        "level": "Red",
         "photo": ""
     }
 ]

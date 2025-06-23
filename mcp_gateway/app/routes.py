@@ -89,6 +89,7 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
                 level_filter=entities.get("level_filter"),
                 start_date_filter=entities.get("start_date_filter"),
                 end_date_filter=entities.get("end_date_filter"),
+                limit=entities.get("limit"),
                 format_as_table=format_as_table
             )}
         else:

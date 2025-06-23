@@ -23,6 +23,9 @@
     <div id="chat-container" style="border: 1px solid #ccc; padding: 10px; margin-top: 10px;">
         <!-- Chat messages will appear here -->
     </div>
+    <!-- Toast Notification element for displaying errors -->
+    <div id="toast-notification" class="toast"></div>
+
     <style>
         .chat-input-container {
             display: flex;
@@ -69,6 +72,28 @@
         }
         input:checked + .slider { background-color: #2196F3; }
         input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Toast Notification styles */
+        .toast {
+            visibility: hidden; /* Hidden by default */
+            min-width: 250px;
+            background-color: #d9534f; /* Red for error */
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            padding: 16px;
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 30px; /* 30px from the bottom */
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
 
         .bot-reply {
             color: blue;

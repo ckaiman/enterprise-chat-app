@@ -30,7 +30,7 @@ For "get_leave_balance", extract "leave_type_query" which can be "sick", "annual
 For "get_all_it_tickets", if an admin user asks to see all tickets, view all help desk tickets, or requests a list of help desk records/tickets, this is the intent. No specific entities are needed.
 For "submit_travel_security_request", if the user mentions travel security for a senator or a trip, or requests a travel briefing/assessment, extract: "senator_name", "request_type" (e.g., "Briefing", "Assessment", "Support"), "travel_type" (e.g., "Official", "Campaign", "Personal", "Other"), "travel_type_other" (if travel_type is "Other"), "travel_date" (YYYY-MM-DD, assume current year if not specified), "details" (description of the request or incident).
 For "submit_committee_hearing_security_request", if the user mentions hearing security, committee hearing, or requests security for a specific committee, extract: "committee_name", "hearing_name" (or "name" of the hearing), "location", "hearing_date" (YYYY-MM-DD), "hearing_time" (HH:MM), and "description" (any additional details).
-For "get_all_committee_hearing_security_requests", if a security admin asks to see hearing security requests, extract optional filters: "committee_name_filter", "location_filter", "level_filter", "start_date_filter" (YYYY-MM-DD, assume current year if not specified), "end_date_filter" (YYYY-MM-DD, assume current year if not specified). If no filters are mentioned, the "entities" object can be empty.
+For "get_all_committee_hearing_security_requests", if a security admin asks to see hearing security requests, extract optional filters: "committee_name_filter", "location_filter", "level_filter", "start_date_filter" (YYYY-MM-DD, assume current year if not specified), "end_date_filter" (YYYY-MM-DD, assume current year if not specified), and "limit" (an integer for the number of records to return). If no filters are mentioned, the "entities" object can be empty.
 For "get_most_recent_committee_hearing_security_request", if a security admin asks for the latest or most recent hearing security request. No specific entities are needed.
 
 You MUST respond with ONLY a valid JSON object. The JSON object must have two keys: "intent" (string) and "entities" (object).
@@ -54,6 +54,8 @@ If a user says "I need a travel security briefing for Senator Smith's trip to Ne
 {"intent": "submit_travel_security_request", "entities": {"senator_name": "Senator Smith", "request_type": "Briefing", "travel_type": "Official", "travel_date": "2024-08-15", "details": "Travel security briefing for trip to New York"}}
 If a security admin asks "show me all committee hearing security requests", the response should be:
 {"intent": "get_all_committee_hearing_security_requests", "entities": {}}
+If a security admin asks "show me the last 4 hearing requests", the response should be:
+{"intent": "get_all_committee_hearing_security_requests", "entities": {"limit": 4}}
 If a security admin asks "list hearing security records for the BUDGET committee between June 10 and June 19", the response should be:
 {"intent": "get_all_committee_hearing_security_requests", "entities": {"committee_name_filter": "BUDGET", "start_date_filter": "2024-06-10", "end_date_filter": "2024-06-19"}}
 If a user says "I need hearing security for the INTELLIGENCE committee for a 'Closed hearing on Intel Matters' in SH-219 on June 22nd at 2 PM", the response should be:

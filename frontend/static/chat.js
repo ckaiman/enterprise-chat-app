@@ -1,3 +1,14 @@
+function showToast(message) {
+    const toast = document.getElementById("toast-notification");
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    // After 3 seconds, remove the show class
+    setTimeout(() => { toast.classList.remove("show"); }, 3000);
+}
+
 function appendMessageToChat(message, sender) {
     const chatContainer = document.getElementById("chat-container");
     const messageElement = document.createElement("div");
@@ -131,8 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     micToggle.parentElement.style.display = 'none';
                 }
 
-                chatbox.value = errorMessage;
-                chatbox.style.color = 'red';
+                showToast(errorMessage);
                 micToggle.checked = false; // Turn off toggle on error
             };
 
