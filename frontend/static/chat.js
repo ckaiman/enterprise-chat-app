@@ -9,33 +9,38 @@ function showToast(message) {
     setTimeout(() => { toast.classList.remove("show"); }, 3000);
 }
 
-function appendMessageToChat(message, sender, data = null) {
+function appendTurnToChat(userMessage, botMessage, botData = null) {
     const chatContainer = document.getElementById("chat-container");
-    const messageElement = document.createElement("div");
+    
+    // Create a container for the whole turn to group user and bot messages.
+    const turnElement = document.createElement("div");
+    turnElement.classList.add("chat-turn");
 
-    if (sender === "bot") {
-        messageElement.classList.add("bot-reply"); // For blue text styling
-        let botMessageHTML = "<strong>Bot:</strong> " + message;
+    // 1. Create and add the user message element
+    const userMessageElement = document.createElement("div");
+    const userPrefix = document.createElement("strong");
+    userPrefix.textContent = "You: ";
+    userMessageElement.appendChild(userPrefix);
+    userMessageElement.appendChild(document.createTextNode(userMessage));
+    turnElement.appendChild(userMessageElement);
 
-        // If there's data, format it and append it in a styled box.
-        if (data && typeof data === 'object' && Object.keys(data).length > 0) {
-            const jsonDataString = JSON.stringify(data, null, 2);
-            botMessageHTML += `
-                <div class="result-box">
-                    <strong>Result:</strong>
-                    <pre class="json-response">${jsonDataString}</pre>
-                </div>`;
-        }
-        messageElement.innerHTML = botMessageHTML;
-    } else {
-        // For user messages, we still use textContent for the message itself for security,
-        // but we build the element with a bold prefix.
-        const prefix = document.createElement("strong");
-        prefix.textContent = "You: ";
-        messageElement.appendChild(prefix);
-        messageElement.appendChild(document.createTextNode(message));
+    // 2. Create and add the bot message element
+    const botMessageElement = document.createElement("div");
+    botMessageElement.classList.add("bot-reply");
+    let botMessageHTML = "<strong>Bot:</strong> " + botMessage;
+    if (botData && typeof botData === 'object' && Object.keys(botData).length > 0) {
+        const jsonDataString = JSON.stringify(botData, null, 2);
+        botMessageHTML += `
+            <div class="result-box">
+                <strong>Result:</strong>
+                <pre class="json-response">${jsonDataString}</pre>
+            </div>`;
     }
-    chatContainer.prepend(messageElement); // Add new messages to the top
+    botMessageElement.innerHTML = botMessageHTML;
+    turnElement.appendChild(botMessageElement);
+
+    // 3. Prepend the whole turn to the main chat container
+    chatContainer.prepend(turnElement);
 }
 
 function sendMessage() {
@@ -67,9 +72,7 @@ function sendMessage() {
             console.error("Received an undefined or null reply from the server. Full response:", data);
         }
 
-        // alert("Reply: " + replyContent); // Remove alert
-        appendMessageToChat(message, "user"); // Display user's message
-        appendMessageToChat(replyContent, "bot", dataPayload); // Display bot's reply and the data payload
+        appendTurnToChat(message, replyContent, dataPayload);
     })
     .catch(error => console.error("Chat failed", error));
 }
