@@ -9,14 +9,24 @@ function showToast(message) {
     setTimeout(() => { toast.classList.remove("show"); }, 3000);
 }
 
-function appendMessageToChat(message, sender) {
+function appendMessageToChat(message, sender, data = null) {
     const chatContainer = document.getElementById("chat-container");
     const messageElement = document.createElement("div");
 
     if (sender === "bot") {
         messageElement.classList.add("bot-reply"); // For blue text styling
-        // The message for the bot can now contain HTML (like tables or <pre> tags)
-        messageElement.innerHTML = "<strong>Bot:</strong> " + message;
+        let botMessageHTML = "<strong>Bot:</strong> " + message;
+
+        // If there's data, format it and append it in a styled box.
+        if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+            const jsonDataString = JSON.stringify(data, null, 2);
+            botMessageHTML += `
+                <div class="result-box">
+                    <strong>Result:</strong>
+                    <pre class="json-response">${jsonDataString}</pre>
+                </div>`;
+        }
+        messageElement.innerHTML = botMessageHTML;
     } else {
         // For user messages, we still use textContent for the message itself for security,
         // but we build the element with a bold prefix.
@@ -50,18 +60,16 @@ function sendMessage() {
         console.log("Type of data.reply:", typeof data.reply);
         console.log("Value of data.reply:", data.reply);
         let replyContent = data.reply;
+        let dataPayload = data.data; // Get the raw data payload
+
         if (replyContent === undefined || replyContent === null) {
             replyContent = "I'm sorry, I encountered an issue and can't provide a response right now.";
             console.error("Received an undefined or null reply from the server. Full response:", data);
         }
 
-        if (typeof replyContent === 'object' && replyContent !== null && !String(replyContent).startsWith('<table')) {
-            // Wrap the pretty-printed JSON in a styled <pre> tag to preserve formatting.
-            replyContent = '<pre class="json-response">' + JSON.stringify(replyContent, null, 2) + '</pre>';
-        }
         // alert("Reply: " + replyContent); // Remove alert
         appendMessageToChat(message, "user"); // Display user's message
-        appendMessageToChat(replyContent, "bot"); // Display bot's reply
+        appendMessageToChat(replyContent, "bot", dataPayload); // Display bot's reply and the data payload
     })
     .catch(error => console.error("Chat failed", error));
 }

@@ -1,6 +1,7 @@
 import logging
 from typing import Dict, Any
 import os
+from datetime import datetime
 import json
 import google.generativeai as genai
 
@@ -22,8 +23,8 @@ else:
 SYSTEM_PROMPT = """
 You are an intelligent assistant. Your task is to analyze the user's message and determine their intent and extract relevant entities.
 The possible intents are: "get_leave_balance", "request_leave", "submit_it_ticket", "get_account_info", "get_all_it_tickets", "submit_travel_security_request", "submit_committee_hearing_security_request", "get_all_committee_hearing_security_requests", "get_most_recent_committee_hearing_security_request", "unknown".
-
-For "request_leave", extract: "leave_type" (e.g., "vacation", "sick"), "start_date" (YYYY-MM-DD), "end_date" (YYYY-MM-DD), "reason" (a summary of the leave request).
+ 
+For "request_leave", extract: "leave_type" (e.g., "vacation", "sick"), "start_date" (YYYY-MM-DD), "end_date" (YYYY-MM-DD), "reason" (a summary of the leave request). You MUST resolve relative dates (e.g., "tomorrow", "next Tuesday") based on the current date provided. If a year is not specified, assume the current year. For date ranges like "July 8-9", extract both start and end dates. If a duration is mentioned (e.g., "3 days", "a week"), you must calculate the end_date based on the start_date. If a duration is in hours (e.g., "40 hours"), convert it to days assuming an 8-hour workday. For leave requests, assume durations refer to business days (Mon-Fri). If a user requests "next week" off without specifying a duration, assume they mean the entire work week (Monday to Friday).
 For "submit_it_ticket", extract: "category" (e.g., "hardware", "software", "network", "email", "account", "other"), "priority" (e.g., "low", "medium", "high"), "description" (the user's full issue statement). If the user describes a problem like "I'm having trouble with X" or "X is not working", this is likely a "submit_it_ticket" intent. The "description" should be the user's problem. If a category isn't explicit, try to infer one (e.g., "email issue" -> category: "email") or use "other".
 For "get_account_info", extract "account_detail_query" which can be "email", "name", "role". If no specific detail is requested (e.g., "tell me about my account", "who am i?"), the "entities" object can be empty, implying all details are requested.
 For "get_leave_balance", extract "leave_type_query" which can be "sick", "annual", "vacation". If no specific type is requested (e.g., "what's my leave balance?"), the "entities" object can be empty, implying all types are requested.
@@ -36,6 +37,12 @@ For "get_most_recent_committee_hearing_security_request", if a security admin as
 You MUST respond with ONLY a valid JSON object. The JSON object must have two keys: "intent" (string) and "entities" (object).
 Example for "request_leave":
 {"intent": "request_leave", "entities": {"leave_type": "sick", "start_date": "2024-01-10", "reason": "Feeling unwell"}}
+If a user says "I need to take off for 3 days next week for vacation", and next Monday is 2024-07-08, the response should be:
+{"intent": "request_leave", "entities": {"leave_type": "vacation", "start_date": "2024-07-08", "end_date": "2024-07-10", "reason": "Take off for 3 days next week for vacation"}}
+If a user says "I need to take off next week for vacation", and next Monday is 2024-07-08, the response should be:
+{"intent": "request_leave", "entities": {"leave_type": "vacation", "start_date": "2024-07-08", "end_date": "2024-07-12", "reason": "Take off next week for vacation"}}
+If a user says "I need to take 40 hours of vacation next week", and next Monday is 2024-07-08, the response should be:
+{"intent": "request_leave", "entities": {"leave_type": "vacation", "start_date": "2024-07-08", "end_date": "2024-07-12", "reason": "Take 40 hours of vacation next week"}}
 Example for "submit_it_ticket":
 {"intent": "submit_it_ticket", "entities": {"category": "software", "priority": "medium", "description": "My email client is crashing."}}
 If the user says "I'm having email trouble", the response should be:
@@ -67,7 +74,7 @@ If a user asks "what is my leave balance?", the response should be:
 If the intent is unclear or cannot be mapped to the defined intents, return:
 {"intent": "unknown", "entities": {}}
 
-Ensure dates are in YYYY-MM-DD format. If a date cannot be parsed, return the original string for that date field.
+All extracted dates MUST be in YYYY-MM-DD format. Resolve relative dates (e.g., "tomorrow", "next week") using the current date. If a year is not specified, assume the current year. If a date is ambiguous or cannot be parsed, do not include the date key in the entities.
 The "description" for "submit_it_ticket" should be the user's problem statement.
 The "reason" for "request_leave" should be a concise summary.
 Do not include any explanations or text outside of the JSON object.
@@ -82,7 +89,8 @@ def get_intent_and_entities(message: str) -> Dict[str, Any]:
         logger.error("Gemini model is not initialized. Returning unknown intent.")
         return {"intent": "unknown", "entities": {}}
 
-    full_prompt = f"{SYSTEM_PROMPT}\n\nUser message: {message}"
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    full_prompt = f"{SYSTEM_PROMPT}\n\nToday's date is {current_date}.\n\nUser message: {message}"
 
     try:
         response = model.generate_content(full_prompt)
