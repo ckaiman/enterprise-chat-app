@@ -39,7 +39,11 @@ function updateLoginLogoutButton() {
 
 async function loadUserDetailsAndWelcome() {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+        // This case is already handled on the chat page, but this is a good safeguard.
+        window.location.href = "login.html";
+        return;
+    }
 
     try {
         const response = await fetch("/account/me", {
@@ -54,7 +58,12 @@ async function loadUserDetailsAndWelcome() {
             const firstName = fullName.split(" ")[0]; // Get the first name
             document.getElementById("welcome-header").textContent = `Welcome, ${firstName}, to the Chat Assistant`;
         } else {
+            // If the token is invalid or expired, the API will return an error (e.g., 401).
+            // We should clear the bad token and redirect to the login page.
             console.error("Failed to fetch user details:", response.status);
+            localStorage.removeItem("token");
+            window.location.href = "login.html";
+            return; // Stop further execution
         }
     } catch (error) {
         console.error("Error fetching user details:", error);
