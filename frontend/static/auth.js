@@ -20,6 +20,7 @@ function updateLoginLogoutButton() {
     if (!button) return; // Safety check if button doesn't exist
 
     const token = localStorage.getItem("token");
+    const userIcon = document.getElementById("user-profile-icon");
 
     if (token) {
         button.textContent = "Logout";
@@ -34,6 +35,7 @@ function updateLoginLogoutButton() {
         button.onclick = function() {
             window.location.href = "login.html";
         };
+        if (userIcon) userIcon.style.display = 'none'; // Hide icon if not logged in
     }
 }
 
@@ -57,6 +59,32 @@ async function loadUserDetailsAndWelcome() {
             const fullName = userData.name || "User";
             const firstName = fullName.split(" ")[0]; // Get the first name
             document.getElementById("welcome-header").textContent = `Welcome, ${firstName}, to the SAAssistant`;
+
+            // --- Profile Icon & Modal Logic ---
+            const userIcon = document.getElementById("user-profile-icon");
+            const modal = document.getElementById("user-profile-modal");
+            const closeBtn = document.querySelector(".close-button");
+
+            if (userIcon) {
+                userIcon.style.display = 'block';
+            }
+
+            // Populate modal with user data
+            document.getElementById("modal-user-name").textContent = userData.name || 'N/A';
+            document.getElementById("modal-user-role").textContent = userData.role || 'N/A';
+            document.getElementById("modal-user-office").textContent = userData.office ? userData.office.name : 'N/A';
+
+            // Add event listeners to open/close the modal
+            if (userIcon && modal && closeBtn) {
+                userIcon.onclick = () => { modal.style.display = "block"; };
+                closeBtn.onclick = () => { modal.style.display = "none"; };
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = (event) => {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                };
+            }
         } else {
             // If the token is invalid or expired, the API will return an error (e.g., 401).
             // We should clear the bad token and redirect to the login page.

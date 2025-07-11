@@ -7,9 +7,22 @@
     <script src="chat.js"></script>
 </head>
 <body>
-    <div id="auth-controls" style="position: absolute; top: 10px; right: 10px;">
+    <div id="auth-controls">
+        <div id="user-profile-icon">👤</div>
         <button id="login-logout-button"></button>
     </div>
+
+    <!-- The User Profile Modal -->
+    <div id="user-profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>User Profile</h2>
+            <p><strong>Name:</strong> <span id="modal-user-name"></span></p>
+            <p><strong>Role:</strong> <span id="modal-user-role"></span></p>
+            <p><strong>Office:</strong> <span id="modal-user-office"></span></p>
+        </div>
+    </div>
+
     <h1 id="welcome-header">Welcome to the Chat Assistant</h1>
     <div class="chat-input-container">
         <!-- Speech Recognition Toggle -->
@@ -27,6 +40,19 @@
     <div id="toast-notification" class="toast"></div>
 
     <style>
+        #auth-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        #user-profile-icon {
+            display: none; /* Hidden by default, shown via JS */
+            cursor: pointer;
+            font-size: 24px;
+        }
         .chat-input-container {
             display: flex;
             align-items: center;
@@ -72,6 +98,43 @@
         }
         input:checked + .slider { background-color: #2196F3; }
         input:checked + .slider:before { transform: translateX(22px); }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 2; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 8px;
+            position: relative;
+        }
+        .close-button {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
         /* Toast Notification styles */
         .toast {
