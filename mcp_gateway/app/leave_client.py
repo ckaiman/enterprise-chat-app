@@ -30,9 +30,9 @@ def get_leave_balance(token: str, leave_type_query: str = None):
 
     return {key_to_check: response_data.get(key_to_check, "Not available")}
 
-def request_leave(token: str, reason: str, leave_type: str = None, start_date: str = None, end_date: str = None):
+def request_leave(token: str, reason: str, leave_type: str = None, start_date: str = None, end_date: str = None, hours: float = None):
     """Submit a leave request"""
-    logger.info(f"Requesting leave for token (first 10 chars): {token[:10]}... Details: type={leave_type}, start={start_date}, end={end_date}, reason='{reason}'")
+    logger.info(f"Requesting leave for token (first 10 chars): {token[:10]}... Details: type={leave_type}, start={start_date}, end={end_date}, hours={hours}, reason='{reason}'")
     
     # This payload should match what the leave_service /leave/request endpoint expects.
     # We only include keys if they have a value.
@@ -43,6 +43,8 @@ def request_leave(token: str, reason: str, leave_type: str = None, start_date: s
         payload["start_date"] = start_date
     if end_date:
         payload["end_date"] = end_date
+    if hours:
+        payload["hours"] = hours
 
     response = requests.post(f"{LEAVE_API_URL}/leave/request", headers={"Authorization": f"Bearer {token}"}, json=payload)
 

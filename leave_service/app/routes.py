@@ -54,8 +54,11 @@ async def submit_leave_request(request_data: LeaveRequest, user_data: dict = Dep
         raise HTTPException(status_code=404, detail=f"Leave balance not found for user {user_email}")
 
     # 2. Calculate requested leave in hours
-    leave_days = calculate_business_days(request_data.start_date, request_data.end_date)
-    requested_hours = leave_days * 8  # Assuming 8-hour workdays
+    if request_data.hours and request_data.hours > 0:
+        requested_hours = request_data.hours
+    else:
+        leave_days = calculate_business_days(request_data.start_date, request_data.end_date)
+        requested_hours = leave_days * 8  # Assuming 8-hour workdays
 
     # 3. Check against the correct leave type balance
     leave_type_to_check = request_data.leave_type.lower()
@@ -69,7 +72,7 @@ async def submit_leave_request(request_data: LeaveRequest, user_data: dict = Dep
 
     # 4. Compare and raise error if insufficient
     if requested_hours > available_balance:
-        raise HTTPException(status_code=400, detail=f"Insufficient {leave_type_to_check} leave balance. Available: {available_balance}")
+        raise HTTPException(status_code=400, detail=f"Insufficient {leave_type_to_check} leave balance. Available: {available_balance}, Requested: {requested_hours}")
 
     new_request = {
         "request_id": str(uuid.uuid4()),
@@ -80,6 +83,8 @@ async def submit_leave_request(request_data: LeaveRequest, user_data: dict = Dep
         "reason": request_data.reason,
         "status": "pending_approval" # Default status
     }
+    if request_data.hours:
+        new_request["hours"] = request_data.hours
     MOCK_LEAVE_REQUESTS.append(new_request)
     
     return LeaveRequestResponse(**new_request)

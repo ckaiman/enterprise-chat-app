@@ -10,6 +10,7 @@ class LeaveRequest(BaseModel):
     start_date: str
     end_date: str
     reason: Optional[str] = None
+    hours: Optional[float] = None
 
 class LeaveRequestResponse(BaseModel):
     request_id: str

@@ -82,7 +82,8 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
             reason=entities.get("reason", user_message),
             leave_type=entities.get("leave_type"),
             start_date=entities.get("start_date"),
-            end_date=entities.get("end_date")
+            end_date=entities.get("end_date"),
+            hours=entities.get("hours")
         )
         if leave_response and leave_response.get("status") == "pending_approval":
              reply_text = f"Your leave request for {leave_response.get('leave_type', 'leave')} from {leave_response.get('start_date')} to {leave_response.get('end_date')} has been submitted for approval."
