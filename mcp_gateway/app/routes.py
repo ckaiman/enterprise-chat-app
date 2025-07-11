@@ -158,6 +158,13 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
         departure_details = entities.get("departure")
         arrival_details = entities.get("arrival")
 
+        # If senator_name is not provided, infer it from the user's office if possible.
+        if not senator_name:
+            user_office = user.get("office")
+            if user_office and user_office.get("name", "").startswith("Senator"):
+                senator_name = user_office["name"]
+                logger.info(f"Inferred senator_name '{senator_name}' from user's office.")
+
         # This block implements a conversational waterfall to gather all necessary information.
         context_for_next_turn = {
             "original_message": full_user_message,

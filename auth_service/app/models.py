@@ -1,4 +1,8 @@
 from pydantic import BaseModel
+from typing import Optional
+
+class Office(BaseModel):
+    name: str
 
 class LoginRequest(BaseModel):
     email: str
@@ -12,3 +16,4 @@ class UserInfoResponse(BaseModel):
     email: str
     name: str
     role: str
+    office: Optional[Office] = None

@@ -30,7 +30,7 @@ function appendTurnToChat(userMessage, botMessage, botData = null) {
     // 2. Create and add the bot message element
     const botMessageElement = document.createElement("div");
     botMessageElement.classList.add("bot-reply");
-    let botMessageHTML = "<strong>Bot:</strong> " + botMessage;
+    let botMessageHTML = "<strong>SAAssistant:</strong> " + botMessage;
     if (botData && typeof botData === 'object' && Object.keys(botData).length > 0) {
         const jsonDataString = JSON.stringify(botData, null, 2);
         botMessageHTML += `

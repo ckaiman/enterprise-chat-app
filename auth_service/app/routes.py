@@ -12,7 +12,7 @@ def login(request: LoginRequest):
     if not user or request.password != user["password"]:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    token_data = {"sub": request.email, "name": user["name"], "role": user["role"]}
+    token_data = {"sub": request.email, "name": user["name"], "role": user["role"], "office": user.get("office")}
     token = create_access_token(token_data)
 
     return {"access_token": token}
@@ -46,4 +46,4 @@ async def get_current_user_data_from_header(request: Request):
 @router.get("/account/me", response_model=UserInfoResponse)
 def get_my_account_info(user_data: dict = Depends(get_current_user_data_from_header)):
     """Return information about the authenticated user"""
-    return UserInfoResponse(email=user_data.get("sub"), name=user_data.get("name"), role=user_data.get("role"))
+    return UserInfoResponse(email=user_data.get("sub"), name=user_data.get("name"), role=user_data.get("role"), office=user_data.get("office"))
