@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 # Add Pydantic BaseModel for request body validation
 from pydantic import BaseModel
+from typing import Dict, Any, Optional
 from .auth_middleware import verify_token, get_raw_token
 from .leave_client import get_leave_balance, request_leave
 from .helpdesk_client import submit_ticket, get_all_tickets
@@ -17,6 +18,7 @@ router = APIRouter()
 # Define a Pydantic model for the chat request body
 class ChatRequest(BaseModel):
     message: str
+    context: Optional[Dict[str, Any]] = None
 
 # Get a logger instance
 logger = logging.getLogger(__name__)
@@ -26,9 +28,19 @@ logger = logging.getLogger(__name__)
 async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str = Depends(get_raw_token)):
     """Processes chat message and routes to backend tools."""
     user_message = request_data.message
+    context = request_data.context
+
+    # If context from a previous turn exists, combine messages for a more complete understanding.
+    if context and context.get("is_clarification"):
+        prior_message = context.get("original_message", "")
+        # Combine the original request with the user's new information.
+        full_user_message = f"{prior_message} {user_message}"
+        logger.info(f"MCP Gateway - Combined message with context: {full_user_message}")
+    else:
+        full_user_message = user_message
 
     # Get intent and entities from the LLM client
-    llm_response = get_intent_and_entities(user_message)
+    llm_response = get_intent_and_entities(full_user_message)
     intent = llm_response.get("intent")
     entities = llm_response.get("entities", {})
 
@@ -79,7 +91,7 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
     elif intent == "request_leave":
         leave_response = request_leave(
             token=token,
-            reason=entities.get("reason", user_message),
+            reason=entities.get("reason", full_user_message),
             leave_type=entities.get("leave_type"),
             start_date=entities.get("start_date"),
             end_date=entities.get("end_date"),
@@ -107,7 +119,7 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
     elif intent == "submit_it_ticket":
         ticket_response = submit_ticket(
             token=token,
-            description=entities.get("description", user_message),
+            description=entities.get("description", full_user_message),
             category=entities.get("category", "other"),
             priority=entities.get("priority", "medium")
         )
@@ -141,27 +153,61 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
         else:
             return {"reply": "Sorry, you do not have permission to view all IT tickets.", "data": None}
     elif intent == "submit_travel_security_request":
+        senator_name = entities.get("senator_name")
+        travel_date = entities.get("travel_date")
+        departure_details = entities.get("departure")
+        arrival_details = entities.get("arrival")
+
+        # This block implements a conversational waterfall to gather all necessary information.
+        context_for_next_turn = {
+            "original_message": full_user_message,
+            "is_clarification": True
+        }
+
+        # 1. Check for Senator Name
+        if not senator_name:
+            return {"reply": "I can help with that. For which senator do you need to request travel security?", "data": None, "context": context_for_next_turn}
+
+        # 2. Check for Travel Date
+        if not travel_date:
+            reply_text = f"I can submit a travel security request for {senator_name}. What is the date of travel?"
+            return {"reply": reply_text, "data": None, "context": context_for_next_turn}
+
+        # 3. Check for Departure Details
+        if not departure_details:
+            reply_text = f"Got it, travel for {senator_name} on {travel_date}. What are the departure details? Please provide the time, location, and carrier if you have them."
+            return {"reply": reply_text, "data": None, "context": context_for_next_turn}
+
+        # 4. Check for Arrival Details
+        if not arrival_details:
+            reply_text = "Thanks for the departure info. Now, what are the arrival details (time, location, carrier)?"
+            return {"reply": reply_text, "data": None, "context": context_for_next_turn}
+
+        # 5. If we have all info, proceed to submit.
         response = submit_travel_security_request(
             token=token,
-            details=entities.get("details", user_message),
-            senator_name=entities.get("senator_name"),
+            details=entities.get("details", full_user_message),
+            senator_name=senator_name,
             request_type=entities.get("request_type"),
             travel_type=entities.get("travel_type"),
             travel_type_other=entities.get("travel_type_other"),
-            travel_date=entities.get("travel_date")
+            travel_date=travel_date,
+            departure=departure_details,
+            arrival=arrival_details
         )
         if response and "request_id" in response:
             reply_text = f"Your travel security request for {response.get('senator_name', 'the senator')} has been submitted. The request ID is {response['request_id']}."
         else:
             reply_text = "I was unable to submit your travel security request. Please provide more details or try again."
-        return {"reply": reply_text, "data": response}
+        # On success or final failure, clear the context by not returning it.
+        return {"reply": reply_text, "data": response, "context": None}
     elif intent == "submit_committee_hearing_security_request":
         response = submit_committee_hearing_security_request(
             token=token,
             committee_name=entities.get("committee_name", "Unknown Committee"),
             hearing_name=entities.get("hearing_name", "Unnamed Hearing"),
             location=entities.get("location", "Unknown Location"),
-            description=entities.get("description", user_message),
+            description=entities.get("description", full_user_message),
             hearing_date=entities.get("hearing_date"),
             hearing_time=entities.get("hearing_time")
         )

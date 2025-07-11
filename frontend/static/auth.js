@@ -56,7 +56,7 @@ async function loadUserDetailsAndWelcome() {
             const userData = await response.json();
             const fullName = userData.name || "User";
             const firstName = fullName.split(" ")[0]; // Get the first name
-            document.getElementById("welcome-header").textContent = `Welcome, ${firstName}, to the Chat Assistant`;
+            document.getElementById("welcome-header").textContent = `Welcome, ${firstName}, to the SAAssistant`;
         } else {
             // If the token is invalid or expired, the API will return an error (e.g., 401).
             // We should clear the bad token and redirect to the login page.

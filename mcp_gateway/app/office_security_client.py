@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 OFFICE_SECURITY_API_URL = os.getenv("OFFICE_SECURITY_API_URL", "http://office_security_service:8004")
 
-def submit_travel_security_request(token: str, details: str, senator_name: str = None, request_type: str = None, travel_type: str = None, travel_type_other: str = None, travel_date: str = None):
+def submit_travel_security_request(token: str, details: str, senator_name: str = None, request_type: str = None, travel_type: str = None, travel_type_other: str = None, travel_date: str = None, departure: dict = None, arrival: dict = None):
     """
     Submits a travel security request to the office_security_service.
     """
@@ -17,7 +17,9 @@ def submit_travel_security_request(token: str, details: str, senator_name: str =
         "travel_type": travel_type,
         "travel_type_other": travel_type_other,
         "travel_date": travel_date,
-        "details": details
+        "details": details,
+        "departure": departure,
+        "arrival": arrival
     }
     endpoint = f"{OFFICE_SECURITY_API_URL}/security/travel-requests"
     logger.info(f"Submitting travel security request to {endpoint} with payload: {payload}")

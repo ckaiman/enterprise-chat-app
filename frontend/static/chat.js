@@ -9,6 +9,9 @@ function showToast(message) {
     setTimeout(() => { toast.classList.remove("show"); }, 3000);
 }
 
+// This will hold the state of the conversation if the bot needs to ask a clarifying question.
+let conversationContext = null;
+
 function appendTurnToChat(userMessage, botMessage, botData = null) {
     const chatContainer = document.getElementById("chat-container");
     
@@ -48,7 +51,17 @@ function sendMessage() {
     let token = localStorage.getItem("token");
     const chatbox = document.getElementById("chatbox");
 
-    chatbox.value = ''; // Clear the input box immediately after getting the value
+    if (!message.trim()) return; // Don't send empty messages
+
+    chatbox.value = ''; // Clear the input box immediately
+
+    // Prepare the payload, including any existing conversation context
+    const payload = {
+        message: message
+    };
+    if (conversationContext) {
+        payload.context = conversationContext;
+    }
 
     fetch("/chat", {
         method: "POST",
@@ -56,25 +69,31 @@ function sendMessage() {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + token
         },
-        body: JSON.stringify({message})
+        body: JSON.stringify(payload)
     })
     .then(response => response.json())
     .then(data => {
-        // Log to see what data.reply actually is
-        console.log("Received data from /chat endpoint:", data);
-        console.log("Type of data.reply:", typeof data.reply);
-        console.log("Value of data.reply:", data.reply);
         let replyContent = data.reply;
         let dataPayload = data.data; // Get the raw data payload
 
+        // Handle the context for the next turn. If the backend sends a context
+        // object, we store it. Otherwise, we clear it.
+        if (data.context) {
+            conversationContext = data.context;
+        } else {
+            conversationContext = null;
+        }
+
         if (replyContent === undefined || replyContent === null) {
             replyContent = "I'm sorry, I encountered an issue and can't provide a response right now.";
-            console.error("Received an undefined or null reply from the server. Full response:", data);
         }
 
         appendTurnToChat(message, replyContent, dataPayload);
     })
-    .catch(error => console.error("Chat failed", error));
+    .catch(error => {
+        console.error("Chat failed", error);
+        conversationContext = null; // Clear context on network error
+    });
 }
 
 // Add event listener for Enter key to send message
