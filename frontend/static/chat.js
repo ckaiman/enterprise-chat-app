@@ -115,35 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadUserDetailsAndWelcome();
     }
 
-    // --- Chat Widget Toggle Logic ---
-    const chatLauncher = document.getElementById('chat-launcher');
-    const chatWidget = document.getElementById('chat-widget');
-    const closeChatWidget = document.getElementById('close-chat-widget');
-    // Get the new expand/contract buttons
-    const expandBtn = document.getElementById('expand-widget-btn');
-    const contractBtn = document.getElementById('contract-widget-btn');
-
-    if (chatLauncher && chatWidget && closeChatWidget) {
-        chatLauncher.onclick = () => {
-            chatWidget.style.display = 'flex'; // Use flex to enable column layout
-            chatLauncher.style.display = 'none';
-        };
-        closeChatWidget.onclick = () => {
-            chatWidget.style.display = 'none';
-            chatLauncher.style.display = 'block';
-        };
-    }
-
-    // --- Chat Widget Resize Logic ---
-    if (chatWidget && expandBtn && contractBtn) {
-        expandBtn.onclick = () => {
-            chatWidget.classList.add('expanded');
-        };
-        contractBtn.onclick = () => {
-            chatWidget.classList.remove('expanded');
-        };
-    }
-
     const chatbox = document.getElementById('chatbox');
     if (chatbox) {
         chatbox.addEventListener('keydown', function(event) {
@@ -153,69 +124,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 sendMessage();
             }
         });
-
-        // --- Speech Recognition ---
-        const micToggle = document.getElementById('mic-toggle');
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        
-        if (SpeechRecognition && micToggle) {
-            const recognition = new SpeechRecognition();
-            recognition.continuous = true; // Keep listening until stopped
-            recognition.interimResults = true; // Show results as they are recognized
-            recognition.lang = 'en-US'; // Explicitly set to the most widely supported language as a final attempt.
-
-            micToggle.addEventListener('change', () => {
-                if (micToggle.checked) {
-                    try {
-                        chatbox.placeholder = "Listening...";
-                        chatbox.value = ""; // Clear any error messages
-                        chatbox.style.color = 'inherit';
-                        recognition.start();
-                    } catch(e) {
-                        console.error("Speech recognition could not be started.", e);
-                        chatbox.value = "Error: Recognition already active.";
-                        chatbox.style.color = 'red';
-                        micToggle.checked = false;
-                    }
-                } else {
-                    chatbox.placeholder = "Enter your request or question...";
-                    recognition.stop();
-                }
-            });
-
-            recognition.onresult = (event) => {
-                let interim_transcript = '';
-                let final_transcript = '';
-
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        final_transcript += event.results[i][0].transcript;
-                    } else {
-                        interim_transcript += event.results[i][0].transcript;
-                    }
-                }
-                chatbox.value = final_transcript + interim_transcript;
-            };
-
-            recognition.onerror = (event) => {
-                console.error("Speech recognition error:", event.error);
-                let errorMessage = `Speech Error: ${event.error}`;
-
-                // Provide a more helpful message and permanently disable the feature if language is not supported.
-                if (event.error === 'language-not-supported') {
-                    errorMessage = "Voice input is not supported by your browser. This feature will now be hidden.";
-                    // Permanently hide the toggle switch as it's not supported.
-                    micToggle.parentElement.style.display = 'none';
-                }
-
-                showToast(errorMessage);
-                micToggle.checked = false; // Turn off toggle on error
-            };
-
-            recognition.onend = () => {
-                micToggle.checked = false; // Ensure toggle is off when recognition ends
-                chatbox.placeholder = "Enter your request or question...";
-            };
-        }
     }
 });

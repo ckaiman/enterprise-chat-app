@@ -26,166 +26,128 @@
             </div>
         </div>
     </div>
-
-    <div class="main-content">
+ 
+    <div class="main-container">
         <h1 id="portal-header">Senate Portal</h1>
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <h3>Upcoming Hearings</h3>
-                <ul>
-                    <li><strong>BUDGET:</strong> FY2025 Budget Review <span>Tomorrow</span></li>
-                    <li><strong>ARMED SERVICES:</strong> Global Threat Assessment <span>In 3 days</span></li>
-                    <li><strong>INTELLIGENCE:</strong> Classified Briefing <span>Next week</span></li>
-                </ul>
-                <a href="#" class="card-link">View All Hearings</a>
+
+        <!-- Main Chat Interface -->
+        <div id="chat-interface">
+            <div id="chat-container">
+                <!-- Chat messages will appear here -->
             </div>
-            <div class="dashboard-card">
-                <h3>My Leave Balances</h3>
-                <div class="leave-balance">
-                    <div class="balance-item">
-                        <span class="balance-hours">120</span>
-                        <span>Annual</span>
-                    </div>
-                    <div class="balance-item">
-                        <span class="balance-hours">48</span>
-                        <span>Sick</span>
-                    </div>
-                </div>
-                 <a href="#" class="card-link">Request Leave</a>
-            </div>
-            <div class="dashboard-card">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="#">Submit IT Ticket</a></li>
-                    <li><a href="#">View Security Protocols</a></li>
-                    <li><a href="#">Employee Handbook</a></li>
-                </ul>
-            </div>
-            <div class="dashboard-card wide-card">
-                <h3>Key Votes This Week</h3>
-                <img src="https://placehold.co/600x150/8C1D40/white?text=Upcoming+Senate+Votes" alt="Upcoming Senate Votes" style="width:100%; border-radius: 4px; margin-top: 10px;">
-                <p>Key votes on the National Defense Authorization Act and the Bipartisan Infrastructure Framework are scheduled for this week. Please review all materials on the internal portal.</p>
+            <div class="chat-input-container">
+                <textarea id="chatbox" placeholder="Enter your request..."></textarea>
+                <button id="send-button" onclick="sendMessage()">
+                    <div class="orb"></div>
+                </button>
             </div>
         </div>
     </div>
+
 
     <!-- Toast Notification element for displaying errors -->
     <div id="toast-notification" class="toast"></div>
 
-    <!-- Chat Widget Launcher -->
-    <div id="chat-launcher">💬</div>
-
-    <!-- The Chat Widget -->
-    <div id="chat-widget">
-        <div class="chat-widget-header">
-            <h2>SAAssistant</h2>
-            <div class="widget-controls">
-                <span id="expand-widget-btn" title="Expand">🗖</span>
-                <span id="contract-widget-btn" title="Contract">🗗</span>
-                <span id="close-chat-widget" title="Close">&times;</span>
-            </div>
-        </div>
-        <div id="chat-container">
-            <!-- Chat messages will appear here -->
-        </div>
-        <div class="chat-input-container">
-            <textarea id="chatbox" placeholder="Enter your request..."></textarea>
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
-
     <style>
+        /* --- Basic Setup & Futuristic Theme --- */
+        :root {
+            --glow-color: #00ffff; /* Cyan glow */
+            --primary-text: #e0e0e0;
+            --secondary-text: #a0a0a0;
+            --background-color: #0a0a14;
+            --container-bg: rgba(10, 25, 47, 0.8);
+            --border-color: rgba(0, 255, 255, 0.3);
+        }
+
+        body {
+            background-color: var(--background-color);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 75% 75%, rgba(0, 100, 255, 0.1) 0%, transparent 40%);
+            color: var(--primary-text);
+            font-family: 'Orbitron', sans-serif; /* A futuristic font, needs to be imported or use a fallback */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Auth & Header --- */
         #auth-controls {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 20px;
+            right: 20px;
             display: flex;
             align-items: center;
             gap: 15px;
+            z-index: 10;
         }
         #user-profile-icon {
             display: none; /* Hidden by default, shown via JS */
             cursor: pointer;
-            font-size: 24px;
+            font-size: 28px;
+            color: var(--glow-color);
+            text-shadow: 0 0 5px var(--glow-color);
         }
         #login-logout-button {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            color: #343a40;
+            background-color: transparent;
+            border: 1px solid var(--glow-color);
+            color: var(--glow-color);
             padding: 8px 16px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            transition: background-color 0.2s, color 0.2s;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            text-shadow: 0 0 3px var(--glow-color);
         }
         #login-logout-button:hover {
-            background-color: #e9ecef;
-            color: #000;
+            background-color: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 10px var(--glow-color);
         }
-        .main-content {
-            text-align: center;
-            margin-top: 10vh;
-            padding: 0 20px;
+        #portal-header {
+            font-family: "Times New Roman", Times, serif; /* Keep original font for branding */
+            font-size: 3.5em;
+            color: #fff;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-weight: 600;
+            text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px var(--glow-color), 0 0 35px var(--glow-color);
         }
 
-        /* The switch - a checkbox with a custom style */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 28px;
-        }
-        .switch input { display: none; } /* Hide default checkbox */
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 28px;
-        }
-        .slider:before {
-            position: absolute;
-            content: "🎤";
-            height: 20px; width: 20px;
-            left: 4px; bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-        input:checked + .slider { background-color: #2196F3; }
-        input:checked + .slider:before { transform: translateX(22px); }
-
-        /* Modal Styles */
+        /* --- Modal Styles (Dark Theme) --- */
         .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 2; /* Sit on top */
+            display: none;
+            position: fixed;
+            z-index: 1001;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
         }
         .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto; /* Adjusted margin */
-            padding: 0; /* Remove padding, will be handled by header/body */
-            border: none;
+            background-color: var(--container-bg);
+            margin: 15% auto;
+            padding: 0;
+            border: 1px solid var(--glow-color);
             width: 80%;
-            max-width: 400px;
-            border-radius: 15px; /* Match chat widget */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Match chat widget */
-            overflow: hidden; /* To contain the header's border-radius */
+            max-width: 450px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px var(--glow-color);
+            overflow: hidden;
         }
         .modal-header {
-            background-color: #002868; /* Senate Blue */
-            color: white;
+            background-color: transparent;
+            border-bottom: 1px solid var(--glow-color);
+            color: var(--glow-color);
             padding: 15px 20px;
             display: flex;
             justify-content: space-between;
@@ -194,6 +156,7 @@
         .modal-header h2 {
             margin: 0;
             font-size: 1.2em;
+            text-shadow: 0 0 5px var(--glow-color);
         }
         .modal-body {
             padding: 25px;
@@ -202,10 +165,11 @@
             margin: 15px 0;
             font-size: 1.1em;
             line-height: 1.5;
+            color: var(--primary-text);
         }
         .modal-body p strong {
-            color: #8C1D40; /* Senate Maroon */
-            min-width: 70px;
+            color: var(--glow-color);
+            min-width: 80px;
             display: inline-block;
         }
         .close-button {
@@ -213,136 +177,133 @@
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            transition: color 0.3s, text-shadow 0.3s;
         }
         .close-button:hover,
         .close-button:focus {
-            color: #ccc;
+            color: var(--glow-color);
+            text-shadow: 0 0 10px var(--glow-color);
         }
 
-        /* Chat Widget Styles */
-        #chat-launcher {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: #002868; /* Senate Blue */
-            color: white;
-            border-radius: 50%;
+        /* --- Main Chat Interface --- */
+        .main-container {
+            width: 100%;
+            max-width: 800px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-
-        #chat-widget {
-            display: none; /* Hidden by default */
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 460px; /* Increased from 370px */
-            height: 680px; /* Increased from 550px */
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            z-index: 1000;
             flex-direction: column;
-            overflow: hidden; /* Hide overflow to keep rounded corners neat */
-            transition: width 0.3s ease-in-out, height 0.3s ease-in-out;
-            /* Set up for container queries to allow content scaling */
-            container-type: inline-size;
-            container-name: chat-widget;
-            font-size: 16px; /* Base font size for scaling */
-        }
-
-        #chat-widget.expanded {
-            width: 920px; /* Double the original width */
-            height: 85vh; /* Use viewport height for a responsive large size */
-        }
-
-        .chat-widget-header {
-            background-color: #002868; /* Senate Blue */
-            color: white;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
             align-items: center;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-        }
-        .chat-widget-header h2 {
-            margin: 0;
-            font-size: 1.2em;
         }
 
-        .widget-controls {
+        #chat-interface {
+            width: 100%;
+            height: 65vh;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
             display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .widget-controls span {
-            cursor: pointer;
-            font-size: 22px;
-            line-height: 1;
-            font-weight: bold;
-            transition: opacity 0.2s;
-        }
-        .widget-controls span:hover {
-            opacity: 0.8;
-        }
-
-        #contract-widget-btn {
-            display: none; /* Hidden by default, shown when expanded */
+            flex-direction: column;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
         }
 
         #chat-container {
             flex-grow: 1;
-            padding: 10px;
+            padding: 20px;
             overflow-y: auto;
-            background-color: #f9f9f9;
+        }
+        /* Custom scrollbar for futuristic look */
+        #chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        #chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #chat-container::-webkit-scrollbar-thumb {
+            background-color: var(--glow-color);
+            border-radius: 4px;
+            border: 2px solid transparent;
         }
 
+        /* --- Glowing Orb Button --- */
+        #send-button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .orb {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, #fff, var(--glow-color));
+            border-radius: 50%;
+            box-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px var(--glow-color),
+                0 0 30px var(--glow-color);
+            transition: all 0.3s ease-in-out;
+            animation: pulse 2s infinite;
+        }
+        #send-button:hover .orb {
+            transform: scale(1.1);
+            box-shadow: 
+                0 0 8px #fff,
+                0 0 15px #fff,
+                0 0 30px var(--glow-color),
+                0 0 45px var(--glow-color);
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--glow-color), 0 0 30px var(--glow-color); }
+            50% { box-shadow: 0 0 8px #fff, 0 0 15px #fff, 0 0 30px var(--glow-color), 0 0 45px var(--glow-color); }
+            100% { box-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px var(--glow-color), 0 0 30px var(--glow-color); }
+        }
         .chat-input-container {
             display: flex;
-            padding: 10px;
-            border-top: 1px solid #ddd;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+            gap: 15px;
+            align-items: center;
         }
         #chatbox {
             flex-grow: 1;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 8px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
             resize: none;
-            font-size: 1em; /* Ensure textarea scales with its parent's font-size */
+            color: var(--primary-text);
+            font-size: 1em;
+            font-family: inherit;
+        }
+        #chatbox:focus {
+            outline: none;
+            box-shadow: 0 0 10px var(--glow-color);
+            border-color: var(--glow-color);
         }
 
-        /* Logic to show/hide the correct icon based on state */
-        #chat-widget.expanded #expand-widget-btn {
-            display: none;
-        }
-        #chat-widget.expanded #contract-widget-btn {
-            display: block;
-        }
-        /* Toast Notification styles */
+        /* --- Toast Notification (Dark Theme) --- */
         .toast {
-            visibility: hidden; /* Hidden by default */
+            visibility: hidden;
             min-width: 250px;
             background-color: #d9534f; /* Red for error */
             color: white;
             text-align: center;
             border-radius: 4px;
             padding: 16px;
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
+            position: fixed;
+            z-index: 1002;
             left: 50%;
             transform: translateX(-50%);
-            bottom: 30px; /* 30px from the bottom */
+            bottom: 30px;
             opacity: 0;
             transition: opacity 0.5s, visibility 0.5s;
+            box-shadow: 0 0 15px #d9534f;
         }
         .toast.show {
             visibility: visible;
@@ -350,154 +311,34 @@
         }
 
         .chat-turn {
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            background-color: #fdfdfd;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid transparent;
         }
         .chat-turn > div:first-child {
-            margin-bottom: 12px; /* Space between user message and bot reply */
+            margin-bottom: 8px;
+            color: var(--primary-text);
         }
-
+        .chat-turn > div:first-child strong {
+            color: var(--glow-color);
+        }
         .bot-reply {
-            color: #8C1D40; /* Senate Maroon */
+            color: var(--primary-text);
+        }
+        .bot-reply strong {
+            color: #ffab00; /* A contrasting color for the bot name */
         }
         .json-response {
-            background-color: #f5f5f5;
-            border: 1px solid #ccc;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
             padding: 10px;
             border-radius: 4px;
-            white-space: pre-wrap; /* Ensures long lines wrap */
-            word-wrap: break-word; /* Breaks long words/strings */
-        }
-
-        /* Dashboard Styles */
-        #portal-header {
-            font-family: "Times New Roman", Times, serif;
-            font-size: 2.8em;
-            color: #002868; /* Senate Blue */
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-weight: 600;
-        }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-            text-align: left;
-            font-size: 16px; /* Reset font size for dashboard content */
-        }
-
-        .dashboard-card {
-            background-color: #ffffff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .dashboard-card h3 {
-            margin-top: 0;
-            border-bottom: 2px solid #002868; /* Senate Blue */
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            color: #002868; /* Senate Blue */
-        }
-
-        .dashboard-card ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            flex-grow: 1;
-        }
-
-        .dashboard-card ul li {
-            padding: 8px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-        .dashboard-card ul li:last-child {
-            border-bottom: none;
-        }
-
-        .dashboard-card ul li span {
-            float: right;
-            color: #666;
-            font-style: italic;
-        }
-
-        .card-link {
-            display: inline-block;
-            margin-top: 15px;
-            color: #8C1D40; /* Senate Maroon */
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .card-link:hover {
-            text-decoration: underline;
-        }
-
-        .leave-balance {
-            display: flex;
-            justify-content: space-around;
-            text-align: center;
-            padding: 20px 0;
-            flex-grow: 1;
-            align-items: center;
-        }
-
-        .balance-item .balance-hours {
-            display: block;
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #002868; /* Senate Blue */
-        }
-
-        .balance-item span {
-            color: #333;
-        }
-
-        .wide-card {
-            grid-column: 1 / -1; /* Make this card span all columns on smaller screens */
-        }
-
-        .wide-card p {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #f0f0f0;
             margin-top: 10px;
-        }
-
-        /* Responsive adjustment for grid */
-        @media (min-width: 980px) {
-            .dashboard-grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            .wide-card {
-                grid-column: span 2;
-            }
-        }
-
-        /* Container Queries for scalable chat widget content */
-        @container chat-widget (min-width: 600px) {
-            #chat-widget {
-                font-size: 17px; /* Increase base font size for larger widget */
-            }
-        }
-
-        @container chat-widget (min-width: 800px) {
-            #chat-widget {
-                font-size: 18px; /* Further increase font size */
-            }
         }
     </style>
 </body>

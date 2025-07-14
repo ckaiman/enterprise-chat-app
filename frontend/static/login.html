@@ -5,31 +5,46 @@
     <title>Login - Senate Portal</title>
     <script src="auth.js"></script>
     <style>
+        :root {
+            --glow-color: #00ffff; /* Cyan glow */
+            --primary-text: #e0e0e0;
+            --background-color: #0a0a14;
+            --container-bg: rgba(10, 25, 47, 0.8);
+            --border-color: rgba(0, 255, 255, 0.3);
+            --error-color: #ff4d4d;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f0f2f5;
+            background-color: var(--background-color);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 75% 75%, rgba(0, 100, 255, 0.1) 0%, transparent 40%);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            color: var(--primary-text);
         }
         .login-container {
-            background-color: #ffffff;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(5px);
             padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-radius: 15px;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
             width: 100%;
             max-width: 400px;
             text-align: center;
         }
         h1 {
             font-family: "Times New Roman", Times, serif;
-            font-size: 2em;
-            color: #002868; /* Senate Blue */
-            margin-bottom: 30px;
+            font-size: 2.5em;
+            color: #fff;
+            margin-bottom: 40px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px var(--glow-color), 0 0 35px var(--glow-color);
         }
         .input-group {
             margin-bottom: 20px;
@@ -37,40 +52,49 @@
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #495057;
+            margin-bottom: 8px;
+            color: var(--glow-color);
             font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
         }
         input[type="email"], input[type="password"] {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             box-sizing: border-box; /* Important for padding and width */
             font-size: 1em;
+            color: var(--primary-text);
         }
         input[type="email"]:focus, input[type="password"]:focus {
             outline: none;
-            border-color: #002868; /* Senate Blue */
-            box-shadow: 0 0 0 2px rgba(0, 40, 104, 0.2);
+            border-color: var(--glow-color);
+            box-shadow: 0 0 10px var(--glow-color);
         }
         button {
             width: 100%;
             padding: 12px;
-            background-color: #002868; /* Senate Blue */
+            background-color: transparent;
+            border: 2px solid var(--glow-color);
             color: white;
-            border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 1.1em;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: background-color 0.3s, box-shadow 0.3s;
+            text-shadow: 0 0 5px var(--glow-color);
+            margin-top: 10px;
         }
         button:hover {
-            background-color: #001f4f; /* A darker blue */
+            background-color: rgba(0, 255, 255, 0.1);
+            box-shadow: 0 0 15px var(--glow-color);
         }
         .error-message {
-            color: #8C1D40; /* Senate Maroon */
+            color: var(--error-color);
+            text-shadow: 0 0 8px var(--error-color);
             margin-top: 15px;
             display: none; /* Hidden by default */
         }
