@@ -22,7 +22,12 @@ function appendTurnToChat(userMessage, botMessage, botData = null) {
     // 1. Create and add the user message element
     const userMessageElement = document.createElement("div");
     const userPrefix = document.createElement("strong");
-    userPrefix.textContent = "You: ";
+    // Get first name of the user from the token
+    const token = localStorage.getItem("token"); // It's safe to assume token exists here, as we check on page load.
+    const decodedToken = JSON.parse(atob(token.split('.')[1])); // Decode the payload of the JWT
+    const userFullName = decodedToken.name || "User"; // Get the full name from the token, fallback to "User"
+    const userFirstName = userFullName.split(" ")[0]; // Extract the first name
+    userPrefix.textContent = `${userFirstName}: `;
     userMessageElement.appendChild(userPrefix);
     userMessageElement.appendChild(document.createTextNode(userMessage));
     turnElement.appendChild(userMessageElement);
@@ -35,7 +40,6 @@ function appendTurnToChat(userMessage, botMessage, botData = null) {
         const jsonDataString = JSON.stringify(botData, null, 2);
         botMessageHTML += `
             <div class="result-box">
-                <strong>Result:</strong>
                 <pre class="json-response">${jsonDataString}</pre>
             </div>`;
     }
@@ -43,7 +47,10 @@ function appendTurnToChat(userMessage, botMessage, botData = null) {
     turnElement.appendChild(botMessageElement);
 
     // 3. Prepend the whole turn to the main chat container
-    chatContainer.prepend(turnElement);
+    // Change from prepend to append to have the latest message at the bottom.
+    chatContainer.appendChild(turnElement);
+    // Scroll to the bottom of the chat container to show the new message.
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
 function sendMessage() {
@@ -108,6 +115,35 @@ document.addEventListener('DOMContentLoaded', () => {
         loadUserDetailsAndWelcome();
     }
 
+    // --- Chat Widget Toggle Logic ---
+    const chatLauncher = document.getElementById('chat-launcher');
+    const chatWidget = document.getElementById('chat-widget');
+    const closeChatWidget = document.getElementById('close-chat-widget');
+    // Get the new expand/contract buttons
+    const expandBtn = document.getElementById('expand-widget-btn');
+    const contractBtn = document.getElementById('contract-widget-btn');
+
+    if (chatLauncher && chatWidget && closeChatWidget) {
+        chatLauncher.onclick = () => {
+            chatWidget.style.display = 'flex'; // Use flex to enable column layout
+            chatLauncher.style.display = 'none';
+        };
+        closeChatWidget.onclick = () => {
+            chatWidget.style.display = 'none';
+            chatLauncher.style.display = 'block';
+        };
+    }
+
+    // --- Chat Widget Resize Logic ---
+    if (chatWidget && expandBtn && contractBtn) {
+        expandBtn.onclick = () => {
+            chatWidget.classList.add('expanded');
+        };
+        contractBtn.onclick = () => {
+            chatWidget.classList.remove('expanded');
+        };
+    }
+
     const chatbox = document.getElementById('chatbox');
     if (chatbox) {
         chatbox.addEventListener('keydown', function(event) {
@@ -121,8 +157,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // --- Speech Recognition ---
         const micToggle = document.getElementById('mic-toggle');
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-        if (SpeechRecognition) {
+        
+        if (SpeechRecognition && micToggle) {
             const recognition = new SpeechRecognition();
             recognition.continuous = true; // Keep listening until stopped
             recognition.interimResults = true; // Show results as they are recognized
@@ -180,8 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 micToggle.checked = false; // Ensure toggle is off when recognition ends
                 chatbox.placeholder = "Enter your request or question...";
             };
-        } else {
-            document.querySelector('.switch').style.display = 'none'; // Hide toggle if not supported
         }
     }
 });

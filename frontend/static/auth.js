@@ -1,18 +1,36 @@
 function login() {
     let email = document.getElementById("email").value;
     let password = document.getElementById("password").value;
+    const errorElement = document.getElementById("login-error");
+    if (errorElement) errorElement.style.display = 'none'; // Hide error on new attempt
 
     fetch("/auth/login", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({email, password})
     })
-    .then(response => response.json())
-    .then(data => {
-        localStorage.setItem("token", data.access_token);
-        window.location.href = "index.html";  // Redirect to chat UI after login
+    .then(response => {
+        if (!response.ok) {
+            // If response is not OK, throw an error to be caught by .catch
+            throw new Error('Login failed');
+        }
+        return response.json();
     })
-    .catch(error => console.error("Login failed", error));
+    .then(data => {
+        if (data.access_token) {
+            localStorage.setItem("token", data.access_token);
+            window.location.href = "index.html";  // Redirect to chat UI after login
+        } else {
+            // This case might happen if the response is OK but no token is returned
+            throw new Error('No access token received');
+        }
+    })
+    .catch(error => {
+        console.error("Login failed", error);
+        if (errorElement) {
+            errorElement.style.display = 'block';
+        }
+    });
 }
 
 function updateLoginLogoutButton() {
@@ -56,9 +74,14 @@ async function loadUserDetailsAndWelcome() {
         });
         if (response.ok) {
             const userData = await response.json();
-            const fullName = userData.name || "User";
-            const firstName = fullName.split(" ")[0]; // Get the first name
-            document.getElementById("welcome-header").textContent = `Welcome, ${firstName}, to the SAAssistant`;
+            // The main header is now static, so we don't update it.
+
+            // Personalize the chatbox placeholder
+            const chatbox = document.getElementById("chatbox");
+            if (chatbox && userData.name) {
+                const firstName = userData.name.split(" ")[0];
+                chatbox.placeholder = `${firstName}, enter your request...`;
+            }
 
             // --- Profile Icon & Modal Logic ---
             const userIcon = document.getElementById("user-profile-icon");
