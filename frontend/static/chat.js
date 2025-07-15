@@ -36,13 +36,16 @@ function appendTurnToChat(userMessage, botMessage, botData = null) {
     const botMessageElement = document.createElement("div");
     botMessageElement.classList.add("bot-reply");
     let botMessageHTML = "<strong>SAAssistant:</strong> " + botMessage;
-    if (botData && typeof botData === 'object' && Object.keys(botData).length > 0) {
-        const jsonDataString = JSON.stringify(botData, null, 2);
-        botMessageHTML += `
-            <div class="result-box">
-                <pre class="json-response">${jsonDataString}</pre>
-            </div>`;
+    
+    if (botData) {
+        if (typeof botData === 'string') { // For HTML table format
+            botMessageHTML += `<div class="result-box">${botData}</div>`;
+        } else if (typeof botData === 'object' && Object.keys(botData).length > 0) { // For JSON data
+             const jsonDataString = JSON.stringify(botData, null, 2);
+             botMessageHTML += `<div class="result-box"><pre class="json-response">${jsonDataString}</pre></div>`;
+         }
     }
+
     botMessageElement.innerHTML = botMessageHTML;
     turnElement.appendChild(botMessageElement);
 

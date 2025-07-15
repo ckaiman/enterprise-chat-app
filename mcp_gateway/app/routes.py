@@ -228,22 +228,24 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
         return {"reply": reply_text, "data": response}
     elif intent == "get_all_committee_hearing_security_requests":
         if user.get("role") == "security_admin":
-            format_as_table = True
-            requests_table = get_all_hearing_security_requests(
-                token=token,
-                committee_name_filter=entities.get("committee_name_filter"),
-                location_filter=entities.get("location_filter"),
-                level_filter=entities.get("level_filter"),
-                start_date_filter=entities.get("start_date_filter"),
-                end_date_filter=entities.get("end_date_filter"),
-                limit=entities.get("limit"),
-                format_as_table=format_as_table
-            )
-            if requests_table and "No requests found" not in str(requests_table):
-                reply_text = f"Here are the committee hearing security requests matching your query:\n{requests_table}"
-                return {"reply": reply_text, "data": None}
-            else:
-                return {"reply": "No committee hearing security requests were found matching your criteria.", "data": None}
+             format_as_table = entities.get("format_as_table", True) # Extract from entities, default to True
+             requests_data = get_all_hearing_security_requests(
+                 token=token,
+                 committee_name_filter=entities.get("committee_name_filter"),
+                 location_filter=entities.get("location_filter"),
+                 level_filter=entities.get("level_filter"),
+                 start_date_filter=entities.get("start_date_filter"),
+                 end_date_filter=entities.get("end_date_filter"),
+                 limit=entities.get("limit"),
+                 format_as_table=format_as_table
+             )
+             if isinstance(requests_data, str) and "Error" in requests_data:
+                 reply_text = requests_data  # Return the error message directly
+             elif format_as_table:
+                 reply_text = f"Here are the committee hearing security requests matching your query:\n{requests_data}" if requests_data else "No committee hearing security requests were found matching your criteria."
+             else:
+                 reply_text = "Here are the committee hearing security requests:" if requests_data else "No committee hearing security requests were found."
+             return {"reply": reply_text, "data": requests_data if not format_as_table else None}
         else:
             return {"reply": "Sorry, you do not have permission to view all committee hearing security requests.", "data": None}
     elif intent == "get_most_recent_committee_hearing_security_request":
@@ -258,4 +260,6 @@ async def chat(request_data: ChatRequest, user=Depends(verify_token), token: str
         else:
             return {"reply": "Sorry, you do not have permission to view the most recent committee hearing security request.", "data": None}
     else: # Default if intent is "unknown" or not handled
+        if context and context.get("is_follow_up") and intent == "unknown":
+            return {"reply": "I'm sorry, I didn't understand the follow-up. Could you please rephrase your request?", "data": None, "context": {"is_follow_up": False}}
         return {"reply": "I'm sorry, I didn't understand that. Could you please rephrase your request?", "data": None}

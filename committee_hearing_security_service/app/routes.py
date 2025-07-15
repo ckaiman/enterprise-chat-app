@@ -82,7 +82,7 @@ async def get_all_hearing_security_requests(
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid end_date_filter format. Use YYYY-MM-DD.")
 
-    # Sort by incident date descending to get the most recent ones first.
+    # Sort by incident date descending, to get the most recent ones first.
     # This handles the "last X" type of requests.
     # We provide a default for None dates to prevent sorting errors.
     filtered_requests.sort(

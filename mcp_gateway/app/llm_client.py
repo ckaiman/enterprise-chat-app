@@ -74,9 +74,13 @@ If a security admin asks "show me the last 4 hearing requests", the response sho
 If a security admin asks "list hearing security records for the BUDGET committee between June 10 and June 19", the response should be:
 {"intent": "get_all_committee_hearing_security_requests", "entities": {"committee_name_filter": "BUDGET", "start_date_filter": "2024-06-10", "end_date_filter": "2024-06-19"}}
 If a user says "I need hearing security for the INTELLIGENCE committee for a 'Closed hearing on Intel Matters' in SH-219 on June 22nd at 2 PM", the response should be:
-{"intent": "submit_committee_hearing_security_request", "entities": {"committee_name": "INTELLIGENCE", "hearing_name": "Closed hearing on Intel Matters", "location": "SH-219", "hearing_date": "2024-06-22", "hearing_time": "14:00", "description": "Security for closed hearing"}}
+{"intent": "submit_committee_hearing_security_request", "entities": {"committee_name": "INTELLIGENCE", "hearing_name": "Closed hearing on Intel Matters", "location": "SH-219", "hearing_date": "2024-06-22", "hearing_time": "14:00", "description": "Hearing security"}}
 If a security admin asks "What is the most recent hearing security request?", the response should be:
-{"intent": "get_most_recent_committee_hearing_security_request", "entities": {}}
+{"intent": "get_most_recent_committee_hearing_security_request", "entities": {}, "format_as_table": true}
+If a security admin asks "how about June 2024?", in response to seeing hearing requests for May 2024, the response should be:
+{"intent": "get_all_committee_hearing_security_requests", "entities": {"start_date_filter": "2024-06-01", "end_date_filter": "2024-06-30"}}
+If a security admin asks "can I see for June 2024 instead?", in response to seeing hearing requests for May 2024, the response should be:
+{"intent": "get_all_committee_hearing_security_requests", "entities": {"start_date_filter": "2024-06-01", "end_date_filter": "2024-06-30"}}
 If a user asks "what is my leave balance?", the response should be:
 {"intent": "get_leave_balance", "entities": {}}
 If the intent is unclear or cannot be mapped to the defined intents, return:
