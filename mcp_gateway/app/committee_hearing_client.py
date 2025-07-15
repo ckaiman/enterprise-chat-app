@@ -37,7 +37,7 @@ def format_hearing_requests_as_table(requests: List[Dict]) -> str:
         return "No hearing security requests found."
 
     # Basic styling for the table
-    html = '<table style="width:100%; border-collapse: collapse; border: 1px solid #ddd; font-family: sans-serif; font-size: 0.9em;">'
+    html = '<table style="width:100%; border-collapse: collapse; border: 1px solid #ddd; font-family: sans-serif;">'
     # Table header
     html += '<tr style="background-color: #f2f2f2;">'
     html += '<th style="padding: 8px; border: 1px solid #ddd; text-align: left;">ID</th>'

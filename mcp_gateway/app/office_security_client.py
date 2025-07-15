@@ -19,7 +19,7 @@ def submit_travel_security_request(token: str, details: str, senator_name: str =
         "travel_date": travel_date,
         "details": details,
         "departure": departure,
-        "arrival": arrival
+        "arrival": arrival,
     }
     endpoint = f"{OFFICE_SECURITY_API_URL}/security/travel-requests"
     logger.info(f"Submitting travel security request to {endpoint} with payload: {payload}")

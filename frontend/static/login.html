@@ -2,117 +2,172 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Login - Senate Portal</title>
+    <title>Enterprise Chat - Login</title>
     <script src="auth.js"></script>
+</head>
+<body>
+    <div class="main-container">
+        <h1 id="portal-header">Senate Portal</h1>
+        
+        <div id="login-container">
+            <h2>Login</h2>
+            <div id="login-error" style="display: none;">Invalid credentials. Please try again.</div>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button onclick="login()">Enter Portal</button>
+        </div>
+    </div>
+
     <style>
+        /* --- Basic Setup & Futuristic Theme (from index.html) --- */
         :root {
             --glow-color: #00ffff; /* Cyan glow */
             --primary-text: #e0e0e0;
+            --secondary-text: #a0a0a0;
             --background-color: #0a0a14;
             --container-bg: rgba(10, 25, 47, 0.8);
             --border-color: rgba(0, 255, 255, 0.3);
-            --error-color: #ff4d4d;
+            --error-color: #d9534f;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: var(--background-color);
             background-image: 
                 radial-gradient(circle at 25% 25%, rgba(0, 255, 255, 0.1) 0%, transparent 40%),
                 radial-gradient(circle at 75% 75%, rgba(0, 100, 255, 0.1) 0%, transparent 40%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
             color: var(--primary-text);
+            font-family: 'Orbitron', sans-serif; /* A futuristic font, needs to be imported or use a fallback */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        .login-container {
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(5px);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+
+        .main-container {
             width: 100%;
-            max-width: 400px;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #portal-header {
+            font-family: "Times New Roman", Times, serif; /* Keep original font for branding */
+            font-size: 3em;
+            color: #fff;
+            margin-bottom: 30px; /* More space between header and login box */
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            font-weight: 600;
+            text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px var(--glow-color), 0 0 35px var(--glow-color);
             text-align: center;
         }
-        h1 {
-            font-family: "Times New Roman", Times, serif;
-            font-size: 2.5em;
-            color: #fff;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 0 0 5px #fff, 0 0 15px #fff, 0 0 25px var(--glow-color), 0 0 35px var(--glow-color);
-        }
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--glow-color);
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.9em;
-            letter-spacing: 1px;
-        }
-        input[type="email"], input[type="password"] {
+
+        /* --- Login Form Styles --- */
+        #login-container {
             width: 100%;
-            padding: 12px;
+            max-width: 400px;
+            background: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 35px 40px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Space between elements */
+            align-items: center;
+            backdrop-filter: blur(5px);
+            box-sizing: border-box;
+        }
+
+        #login-container h2 {
+            color: var(--primary-text);
+            font-size: 2.2em;
+            margin: 0 0 10px 0;
+            font-weight: 500;
+            text-shadow: 0 0 4px var(--glow-color);
+        }
+
+        #login-container input {
+            width: 100%;
             background-color: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            box-sizing: border-box; /* Important for padding and width */
-            font-size: 1em;
+            padding: 15px;
             color: var(--primary-text);
+            font-size: 1.2em;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: box-shadow 0.3s, border-color 0.3s;
         }
-        input[type="email"]:focus, input[type="password"]:focus {
+
+        #login-container input:focus {
             outline: none;
-            border-color: var(--glow-color);
             box-shadow: 0 0 10px var(--glow-color);
+            border-color: var(--glow-color);
         }
-        button {
+
+        #login-container button {
             width: 100%;
-            padding: 12px;
             background-color: transparent;
-            border: 2px solid var(--glow-color);
-            color: white;
+            border: 1px solid var(--glow-color);
+            color: var(--glow-color);
+            padding: 15px 18px;
+            margin-top: 10px; /* Add some space above the button */
             border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: bold;
             cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             transition: background-color 0.3s, box-shadow 0.3s;
-            text-shadow: 0 0 5px var(--glow-color);
-            margin-top: 10px;
+            text-shadow: 0 0 3px var(--glow-color);
         }
-        button:hover {
+
+        #login-container button:hover {
             background-color: rgba(0, 255, 255, 0.1);
             box-shadow: 0 0 15px var(--glow-color);
         }
-        .error-message {
-            color: var(--error-color);
-            text-shadow: 0 0 8px var(--error-color);
-            margin-top: 15px;
-            display: none; /* Hidden by default */
+
+        #login-error {
+            color: #fdd;
+            background-color: rgba(217, 83, 79, 0.2);
+            border: 1px solid var(--error-color);
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+            font-size: 1.1em;
+            box-shadow: 0 0 10px var(--error-color);
+        }
+
+        /* --- Media Queries for Mobile --- */
+        @media (max-width: 480px) {
+            #portal-header {
+                font-size: 2.2em;
+                letter-spacing: 3px;
+            }
+
+            #login-container {
+                padding: 25px;
+                gap: 15px;
+            }
+
+            #login-container h2 {
+                font-size: 1.8em;
+            }
+
+            #login-container input, #login-container button {
+                font-size: 1.1em;
+                padding: 12px;
+            }
         }
     </style>
-</head>
-<body>
-    <div class="login-container">
-        <h1>Senate Portal</h1>
-        <div class="input-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div class="input-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <button onclick="login()">Login</button>
-        <p id="login-error" class="error-message">Invalid credentials. Please try again.</p>
-    </div>
 </body>
 </html>

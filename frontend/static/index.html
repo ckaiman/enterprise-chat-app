@@ -73,8 +73,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
+            min-height: 100vh; /* Changed from overflow: hidden to allow scrolling on smaller screens */
+            padding-bottom: 20px; /* Add padding at the bottom */
+            box-sizing: border-box;
         }
 
         /* --- Auth & Header --- */
@@ -90,7 +91,7 @@
         #user-profile-icon {
             display: none; /* Hidden by default, shown via JS */
             cursor: pointer;
-            font-size: 28px;
+            font-size: 32px; /* Increased font size */
             color: var(--glow-color);
             text-shadow: 0 0 5px var(--glow-color);
         }
@@ -98,10 +99,11 @@
             background-color: transparent;
             border: 1px solid var(--glow-color);
             color: var(--glow-color);
-            padding: 8px 16px;
+            padding: 10px 18px; /* Increased padding */
             border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 1.1em; /* Increased font size */
             transition: background-color 0.3s, box-shadow 0.3s;
             text-shadow: 0 0 3px var(--glow-color);
         }
@@ -111,9 +113,9 @@
         }
         #portal-header {
             font-family: "Times New Roman", Times, serif; /* Keep original font for branding */
-            font-size: 3.5em;
+            font-size: 3em; /* Adjusted for better balance */
             color: #fff;
-            margin-bottom: 20px;
+            margin-bottom: 15px; /* Adjusted margin */
             text-transform: uppercase;
             letter-spacing: 5px;
             font-weight: 600;
@@ -155,7 +157,7 @@
         }
         .modal-header h2 {
             margin: 0;
-            font-size: 1.2em;
+            font-size: 1.5em; /* Increased font size */
             text-shadow: 0 0 5px var(--glow-color);
         }
         .modal-body {
@@ -163,7 +165,7 @@
         }
         .modal-body p {
             margin: 15px 0;
-            font-size: 1.1em;
+            font-size: 1.3em; /* Increased font size */
             line-height: 1.5;
             color: var(--primary-text);
         }
@@ -174,7 +176,7 @@
         }
         .close-button {
             color: #f1f1f1;
-            font-size: 28px;
+            font-size: 32px; /* Increased font size */
             font-weight: bold;
             cursor: pointer;
             transition: color 0.3s, text-shadow 0.3s;
@@ -188,7 +190,7 @@
         /* --- Main Chat Interface --- */
         .main-container {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px; /* Expanded for more space */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -196,7 +198,7 @@
 
         #chat-interface {
             width: 100%;
-            height: 65vh;
+            height: 80vh; /* Increased height to fill more space */
             background: var(--container-bg);
             border: 1px solid var(--border-color);
             border-radius: 15px;
@@ -278,13 +280,18 @@
             padding: 12px;
             resize: none;
             color: var(--primary-text);
-            font-size: 1em;
+            font-size: 1.3em; /* Increased font size for readability */
             font-family: inherit;
         }
         #chatbox:focus {
             outline: none;
             box-shadow: 0 0 10px var(--glow-color);
             border-color: var(--glow-color);
+        }
+        #chatbox::placeholder {
+            /* Doubles the font-size of the input text (1.3em * 2) */
+            font-size: 1.5em; 
+            color: var(--secondary-text);
         }
 
         /* --- Toast Notification (Dark Theme) --- */
@@ -316,6 +323,7 @@
             border-radius: 8px;
             background-color: rgba(0, 0, 0, 0.2);
             border-left: 3px solid transparent;
+            font-size: 1.3em; /* Increased font size for conversation text */
         }
         .chat-turn > div:first-child {
             margin-bottom: 8px;
@@ -339,6 +347,27 @@
             word-wrap: break-word;
             color: #f0f0f0;
             margin-top: 10px;
+        }
+
+        /* --- Media Queries for Mobile Friendliness --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                overflow-y: auto; /* Allow scrolling on mobile */
+            }
+            .main-container {
+                width: 100%;
+                padding: 0;
+            }
+            #portal-header {
+                font-size: 2em; /* Reduced header size on mobile */
+                letter-spacing: 3px;
+                margin-bottom: 10px;
+            }
+            #chat-interface {
+                height: 85vh; /* Take up more vertical space on mobile */
+                border-radius: 10px;
+            }
         }
     </style>
 </body>
